@@ -14,29 +14,20 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
-      - uses: android-actions/setup-android@v3
 
-      - name: 打包
+      - name: 把根目录的壳文件归位到 mobile/
         run: |
-          yes | sdkmanager --licenses > /dev/null 2>&1 || true
-          sdkmanager --install "platforms;android-36" "build-tools;36.0.0" > /dev/null
-          cd mobile
-          npm install --no-audit --no-fund
-          npx cap add android
-          chmod +x android/gradlew
-          cd android
-          ./gradlew assembleDebug --no-daemon
-          cp app/build/outputs/apk/debug/app-debug.apk ../../moread-debug.apk
+          rm -rf mobile
+          mkdir -p mobile
+          cp package.json capacitor.config.json mobile/
+          cp -r scripts android-patches mobile/
 
-      - uses: softprops/action-gh-release@v2
-        with:
-          tag_name: build-${{ github.run_number }}
-          name: 墨读壳 build ${{ github.run_number }}
-          files: moread-debug.apk
+      - name: 构建并发布
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash mobile/scripts/ci.sh
