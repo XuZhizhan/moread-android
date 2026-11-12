@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>墨读</title>
+<style>
+  :root {
+    --paper: #F6F1E7;
+    --ink: #2D2A24;
+    --ink-2: #6B6459;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #16181A; --ink: #ECEAE4; --ink-2: #A29C92; }
+  }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: grid;
+    place-items: center;
+    background: var(--paper);
+    color: var(--ink);
+    font: 16px/1.65 -apple-system, "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
+  }
+  .box { max-width: 22rem; padding: 2rem 1.5rem; text-align: center; }
+  h1 { margin: 0 0 .75rem; font-size: 1.1rem; font-weight: 600; }
+  p { margin: 0; color: var(--ink-2); font-size: .9rem; }
+</style>
+</head>
+<body>
+  <div class="box">
+    <h1>正在连接墨读</h1>
+    <p>这个壳只负责把线上书架装进手机。断网时请稍后再试 —— 已下载的书仍在本地。</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "appId": "com.moread.reader",
+  "appName": "墨读",
+  "webDir": "../dist",
+  "server": {
+    "androidScheme": "https",
+    "url": "https://moread-66776.app.workbuddy.host/?sharecode=SRPBCZNFVG",
+    "cleartext": false,
+    "allowNavigation": [
+      "moread-66776.app.workbuddy.host"
+    ]
+  },
+  "android": {
+    "backgroundColor": "#f4f0e7",
+    "allowMixedContent": false
+  }
+}
