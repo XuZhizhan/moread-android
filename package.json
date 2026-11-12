@@ -1,0 +1,18 @@
+{
+  "name": "moread-android-shell",
+  "version": "0.1.0",
+  "private": true,
+  "description": "墨读图书馆 Android 壳：Capacitor 远程加载，补齐通知 / 后台提醒 / 文件导入 / 设备私钥",
+  "scripts": {
+    "setup": "bash scripts/build.sh setup",
+    "build:debug": "bash scripts/build.sh debug",
+    "build:release": "bash scripts/build.sh release"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.5.1",
+    "@capacitor/android": "^8.5.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.1"
+  }
+}
