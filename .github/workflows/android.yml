@@ -1,0 +1,21 @@
+name: android-debug
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 构建 debug APK
+        run: bash mobile/scripts/ci.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
