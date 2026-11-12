@@ -1,6 +1,7 @@
 package com.moread.reader;
 
 import android.os.Bundle;
+import android.webkit.WebView;
 
 import com.getcapacitor.BridgeActivity;
 
@@ -9,5 +10,26 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(MoreadNativePlugin.class);
         super.onCreate(savedInstanceState);
+    }
+
+    /**
+     * 系统返回键 / 右滑返回：先退 WebView 的历史，退无可退才退出 App。
+     *
+     * 为什么必须接管：Capacitor 8 的 BridgeActivity 对返回键一个字都没写，
+     * 默认走 Activity.onBackPressed() → finish()。读者在阅读器里从屏幕边缘右滑一下，
+     * App 直接没了（2026-11-13 真机反馈）。
+     *
+     * Web 那边每一层（抽屉 / 阅读器 / 词卡）都是 history.pushState 压进来的
+     * （见 app/01a-back.js 的 backPush），所以 webView.goBack() 正好等于「退一层」，
+     * popstate 会照常触发；书架那一层退完 canGoBack() 变 false，这时才真的退出。
+     */
+    @Override
+    public void onBackPressed() {
+        WebView web = getBridge() != null ? getBridge().getWebView() : null;
+        if (web != null && web.canGoBack()) {
+            web.goBack();
+            return;
+        }
+        super.onBackPressed();
     }
 }
