@@ -98,7 +98,10 @@ public class MoreadNativePlugin extends Plugin {
                 PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0));
 
         Notification n = new Notification.Builder(ctx, NOTIF_CHANNEL)
-                .setSmallIcon(getContext().getApplicationInfo().icon)
+                /* 小图标必须是**单色剪影**。原来塞的是应用图标（自适应图标），
+                   Android 8+ 画不出来，通知栏上会是个白方块。这里先用系统自带的小闹钟，
+                   等自己那套图标做了再换成项目里的单色版。 */
+                .setSmallIcon(android.R.drawable.ic_popup_reminder)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setContentIntent(pi)
@@ -125,6 +128,26 @@ public class MoreadNativePlugin extends Plugin {
 
     @PluginMethod
     public void scheduleDailyReminder(PluginCall call) {
+        /* Android 13+ 没授权就排闹钟，闹钟会照常触发、通知被系统丢掉 ——
+           验收时看到的是「排成功了但什么都没发生」。所以排之前先把权限要到。
+           和 notify 一样走别名 + @PermissionCallback。 */
+        if (Build.VERSION.SDK_INT >= 33 && getPermissionState("notifications") != PermissionState.GRANTED) {
+            requestPermissionForAlias("notifications", call, "onReminderPermission");
+            return;
+        }
+        scheduleDailyReminderNow(call);
+    }
+
+    @PermissionCallback
+    private void onReminderPermission(PluginCall call) {
+        if (getPermissionState("notifications") == PermissionState.GRANTED) {
+            scheduleDailyReminderNow(call);
+        } else {
+            call.resolve(ok(false, "no-permission"));
+        }
+    }
+
+    private void scheduleDailyReminderNow(PluginCall call) {
         int hour = call.getInt("hour", 20);
         int minute = call.getInt("minute", 0);
         String title = call.getString("title", "墨读");
@@ -135,6 +158,10 @@ public class MoreadNativePlugin extends Plugin {
         Intent intent = new Intent(ctx, ReminderReceiver.class);
         intent.putExtra("title", title);
         intent.putExtra("body", body);
+        /* hour/minute 要带上：闹钟是一次性的，响过之后由 ReminderReceiver 按这两个值
+           算出下一次再排（见那边的注释）。不带的话明天就断了。 */
+        intent.putExtra("hour", hour);
+        intent.putExtra("minute", minute);
         PendingIntent pi = PendingIntent.getBroadcast(
                 ctx, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0));
@@ -146,6 +173,9 @@ public class MoreadNativePlugin extends Plugin {
         if (cal.getTimeInMillis() <= System.currentTimeMillis()) cal.add(java.util.Calendar.DAY_OF_MONTH, 1);
 
         if (Build.VERSION.SDK_INT >= 23) {
+            /* setAndAllowWhileIdle 是**一次性**闹钟（doze 下也尽量准），响完就没了。
+               每天重复靠 ReminderReceiver 自己续排，不能用 setRepeating ——
+               API 19 起 setRepeating 会被系统打散成不精确窗口，反而错过时间点。 */
             am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pi);
         } else {
             am.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
