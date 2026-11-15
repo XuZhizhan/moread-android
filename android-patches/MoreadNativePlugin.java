@@ -315,6 +315,57 @@ public class MoreadNativePlugin extends Plugin {
         call.resolve(r);
     }
 
+    /* 能力探针：这把钥匙在这台机器上到底能干什么。
+       2026-11-15 真机（OnePlus PJH110 / sdk=35）连 OAEP 的 init 都过不去，
+       面板上只有一句 unwrap-failed，判断不了是钥匙坏、摘要没授权还是 ROM 不支持。
+       所以这里把「本地加密 → 本地解密」四组各跑一遍：pkcs1（钥匙是否健康）、
+       OAEP-SHA256、OAEP-SHA256+MGF1-SHA1、OAEP-SHA1。结果原样回给前端。 */
+    @PluginMethod
+    public void secureKeyProbe(PluginCall call) {
+        JSObject r = new JSObject();
+        r.put("ok", true);
+        PublicKey pub = null;
+        PrivateKey priv = null;
+        try { pub = getPublicKey(); } catch (Exception e) { r.put("pub", e.getClass().getSimpleName()); }
+        try { priv = getPrivateKey(); } catch (Exception e) { r.put("priv", e.getClass().getSimpleName()); }
+        try {
+            android.security.keystore.KeyInfo ki = (android.security.keystore.KeyInfo)
+                    KeyFactory.getInstance("RSA", KEYSTORE).getKeySpec(priv, android.security.keystore.KeyInfo.class);
+            StringBuilder d = new StringBuilder();
+            for (String s : ki.getDigests()) { if (d.length() > 0) d.append('+'); d.append(s); }
+            r.put("info", "digest=" + d + ", hw=" + ki.isInsideSecureHardware());
+        } catch (Exception e) {
+            r.put("info", "info-" + e.getClass().getSimpleName());
+        }
+        if (pub != null && priv != null) {
+            r.put("pkcs1", probeRoundtrip(pub, priv, null));
+            r.put("oaep256", probeRoundtrip(pub, priv, OAEP_SHA256));
+            r.put("oaep256s1", probeRoundtrip(pub, priv,
+                    new OAEPParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA1, PSource.PSpecified.DEFAULT)));
+            r.put("oaep1", probeRoundtrip(pub, priv, OAEP_SHA1));
+        }
+        call.resolve(r);
+    }
+
+    /** 本地加密 + 解密一条龙：只看这把钥匙能不能完成这次操作，不掺 WebCrypto。 */
+    private static String probeRoundtrip(PublicKey pub, PrivateKey priv, OAEPParameterSpec spec) {
+        String tf = spec == null ? "RSA/ECB/PKCS1Padding" : "RSA/ECB/OAEPPadding";
+        try {
+            byte[] msg = "moread-probe".getBytes("UTF-8");
+            Cipher enc = Cipher.getInstance(tf);
+            if (spec == null) enc.init(Cipher.ENCRYPT_MODE, pub);
+            else enc.init(Cipher.ENCRYPT_MODE, pub, spec);
+            byte[] ct = enc.doFinal(msg);
+            Cipher dec = Cipher.getInstance(tf);
+            if (spec == null) dec.init(Cipher.DECRYPT_MODE, priv);
+            else dec.init(Cipher.DECRYPT_MODE, priv, spec);
+            byte[] pt = dec.doFinal(ct);
+            return "moread-probe".equals(new String(pt, "UTF-8")) ? "ok" : "mismatch";
+        } catch (Exception e) {
+            return e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage());
+        }
+    }
+
     /* OAEP 的 MGF1 必须显式写成 SHA-256。
        JCE 里 "RSA/ECB/OAEPWithSHA-256AndMGF1Padding" 这个名字只约定「摘要用 SHA-256」，
        **MGF1 的默认值仍是 SHA-1**；而 WebCrypto 的 RSA-OAEP(hash: SHA-256) 摘要与 MGF1
@@ -324,15 +375,23 @@ public class MoreadNativePlugin extends Plugin {
     private static final OAEPParameterSpec OAEP_SHA256 = new OAEPParameterSpec(
             "SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT);
 
-    /* 解封装的两条变换要都试：同样是 OAEP-SHA256，各家 ROM 对「变换名 + 参数」的校验不一样。
-       · RSA/ECB/OAEPPadding —— 完全由 OAEPParameterSpec 决定摘要与 MGF1（首选）
-       · RSA/ECB/OAEPWithSHA-256AndMGF1Padding —— 名字里隐含一套默认参数，部分机型只认这条
-       真机 2026-11-15（build-13）两条里的后者报 InvalidKeyException: Keystore operation
-       failed —— 那是 Keystore 在 init 阶段按「变换隐含的 MGF1=SHA-1」校验摘要授权被拒，
-       所以这一版同时把密钥换成 v2（允许 SHA-256+SHA-1）并优先走 OAEPPadding。 */
+    private static final OAEPParameterSpec OAEP_SHA1 = new OAEPParameterSpec(
+            "SHA-1", "MGF1", MGF1ParameterSpec.SHA1, PSource.PSpecified.DEFAULT);
+
+    /* 解封装按四条逐一试：同样是 OAEP，各家 ROM 对「变换名 + 摘要 + MGF1」的接受程度不一样。
+       · OAEPPadding              —— 完全由 OAEPParameterSpec 决定摘要与 MGF1
+       · …WithSHA-256AndMGF1Padding —— 名字里隐含一套默认参数，部分机型只认这条
+       前两条用 SHA-256（和 WebCrypto 默认一致）；后两条退到 SHA-1 —— 2026-11-15 真机
+       （sdk=35 / OnePlus PJH110）连 init 都过不去（InvalidKeyException），只能把 SHA-1
+       这一档也备上：真到那一步，前端把 hash 换成 SHA-1 就能通，不必再改壳。 */
     private static final String[] UNWRAP_TRANSFORMS = {
             "RSA/ECB/OAEPPadding",
-            "RSA/ECB/OAEPWithSHA-256AndMGF1Padding"
+            "RSA/ECB/OAEPWithSHA-256AndMGF1Padding",
+            "RSA/ECB/OAEPPadding",
+            "RSA/ECB/OAEPWithSHA-1AndMGF1Padding"
+    };
+    private static final OAEPParameterSpec[] UNWRAP_SPECS = {
+            OAEP_SHA256, OAEP_SHA256, OAEP_SHA1, OAEP_SHA1
     };
 
     @PluginMethod
@@ -349,10 +408,11 @@ public class MoreadNativePlugin extends Plugin {
         }
 
         StringBuilder errs = new StringBuilder();
-        for (String t : UNWRAP_TRANSFORMS) {
+        for (int i = 0; i < UNWRAP_TRANSFORMS.length; i++) {
+            String t = UNWRAP_TRANSFORMS[i];
             try {
                 Cipher cipher = Cipher.getInstance(t);
-                cipher.init(Cipher.DECRYPT_MODE, getPrivateKey(), OAEP_SHA256);
+                cipher.init(Cipher.DECRYPT_MODE, getPrivateKey(), UNWRAP_SPECS[i]);
                 byte[] raw = cipher.doFinal(wrapped);
                 JSObject r = new JSObject();
                 r.put("ok", true);
