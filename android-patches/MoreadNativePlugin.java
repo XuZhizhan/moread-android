@@ -39,10 +39,13 @@ import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
+import javax.crypto.spec.OAEPParameterSpec;
+import javax.crypto.spec.PSource;
 
 /**
  * 墨读原生桥：Web 做不到的四件事。
@@ -304,20 +307,33 @@ public class MoreadNativePlugin extends Plugin {
         call.resolve(r);
     }
 
+    /* OAEP 的 MGF1 必须显式写成 SHA-256。
+       JCE 里 "RSA/ECB/OAEPWithSHA-256AndMGF1Padding" 这个名字只约定「摘要用 SHA-256」，
+       **MGF1 的默认值仍是 SHA-1**；而 WebCrypto 的 RSA-OAEP(hash: SHA-256) 摘要与 MGF1
+       都是 SHA-256。两边 MGF1 不一致，解出来必然是填充错误；再加上这把 Keystore 密钥
+       建的时候 setDigests(SHA256)，连 init 这一步都会被 Keystore 拒掉。
+       2026-11-15 真机：ensure 与加密都成功，unwrap 直接 unwrap-failed —— 就是这个。 */
+    private static final OAEPParameterSpec OAEP_SHA256 = new OAEPParameterSpec(
+            "SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT);
+
     @PluginMethod
     public void secureKeyUnwrap(PluginCall call) {
         String wrappedB64 = call.getString("wrappedKeyB64", "");
         try {
             byte[] wrapped = Base64.decode(wrappedB64, Base64.NO_WRAP);
             Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
-            cipher.init(Cipher.DECRYPT_MODE, getPrivateKey());
+            cipher.init(Cipher.DECRYPT_MODE, getPrivateKey(), OAEP_SHA256);
             byte[] raw = cipher.doFinal(wrapped);
             JSObject r = new JSObject();
             r.put("ok", true);
             r.put("rawKeyB64", Base64.encodeToString(raw, Base64.NO_WRAP));
             call.resolve(r);
         } catch (Exception e) {
-            call.resolve(ok(false, "unwrap-failed"));
+            /* 失败也要说清到底是哪一种：只回 "unwrap-failed" 时，前端看到的只有
+               「解回来对不上」，分不出是 Keystore 没建、摘要不匹配还是填充不对。 */
+            JSObject o = ok(false, "unwrap-failed");
+            o.put("detail", e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage()));
+            call.resolve(o);
         }
     }
 
