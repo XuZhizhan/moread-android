@@ -1,0 +1,15 @@
+node_modules/
+android/
+!android-patches/
+
+# 签名钥匙：**正式签名与口令绝不入库** —— 泄漏一次，别人就能签出可以覆盖安装到
+# 用户手机上的包，而且换不回来（换钥匙 = 所有老用户必须卸载重装、本地数据清零）。
+*.keystore
+*.jks
+*.p12
+.signing.env
+
+# 唯一的例外：这把 debug 钥匙要入库。口令就是公开的 android，它不承担保密职责，
+# 只负责回答「这两个包是不是同一把签的」—— 有它 CI 才能连续出同签名的包，用户才能覆盖升级。
+# CI 检出后拿不到它，build.sh 会直接 exit 1（见 docs/02-architecture/android-shell-build.md §6.3）。
+!scripts/moread-debug.p12
