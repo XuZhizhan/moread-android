@@ -17,11 +17,14 @@ import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.util.Base64;
 
+import androidx.activity.result.ActivityResult;
+
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
+import com.getcapacitor.annotation.ActivityCallback;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
@@ -63,7 +66,6 @@ public class MoreadNativePlugin extends Plugin {
     private static final String KEY_ALIAS = "moread_device_rsa";
     private static final String NOTIF_CHANNEL = "moread";
     private static final String IMPORT_DIR = "imports";
-    private static final int PICK_FILE_REQ = 4001;
 
     // ------------------------------------------------------------------ 通知
 
@@ -203,27 +205,21 @@ public class MoreadNativePlugin extends Plugin {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType(accept.indexOf('/') > 0 ? accept : "application/epub+zip");
-        startActivityForResult(call, intent, PICK_FILE_REQ);
+        /* 必须用「回调方法名」这个重载（Capacitor 3+ 的 AndroidX 通路）。
+           用 int requestCode 那个老重载时，回执要靠 Bridge.getPluginWithRequestCode
+           按 @CapacitorPlugin(requestCodes = …) 反查插件；我们没登记，那个注解也只为
+           旧插件保留 —— 结果就是回执永远送不到插件，pickFile 的 Promise 一直挂着：
+           自检面板停在「文件选择（SAF）：测试中…」，后面两项一项都不跑
+           （2026-11-13 真机实测，构建 11）。 */
+        startActivityForResult(call, intent, "pickFileResult");
     }
 
-    @PluginMethod
-    public void releaseTempFile(PluginCall call) {
-        String path = call.getString("path", "");
-        if (!path.isEmpty()) {
-            File f = new File(path);
-            if (f.exists()) f.delete(); // 忽略失败
-        }
-        call.resolve(ok(true, null));
-    }
-
-    @Override
-    protected void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
-        super.handleOnActivityResult(requestCode, resultCode, data);
-        if (requestCode != PICK_FILE_REQ) return;
-        PluginCall saved = getSavedCall();
-        if (saved == null) return;
-        if (resultCode != Activity.RESULT_OK || data == null || data.getData() == null) {
-            saved.resolve(ok(false, "cancelled"));
+    @ActivityCallback
+    private void pickFileResult(PluginCall call, ActivityResult result) {
+        if (call == null) return;
+        Intent data = result.getData();
+        if (result.getResultCode() != Activity.RESULT_OK || data == null || data.getData() == null) {
+            call.resolve(ok(false, "cancelled"));
             return;
         }
         try {
@@ -247,10 +243,20 @@ public class MoreadNativePlugin extends Plugin {
             r.put("name", name);
             r.put("size", size);
             r.put("filePath", out.getAbsolutePath()); // JS 侧用 Capacitor.convertFileSrc 转成可 fetch 地址
-            saved.resolve(r);
+            call.resolve(r);
         } catch (Exception e) {
-            saved.resolve(ok(false, "read-failed"));
+            call.resolve(ok(false, "read-failed"));
         }
+    }
+
+    @PluginMethod
+    public void releaseTempFile(PluginCall call) {
+        String path = call.getString("path", "");
+        if (!path.isEmpty()) {
+            File f = new File(path);
+            if (f.exists()) f.delete(); // 忽略失败
+        }
+        call.resolve(ok(true, null));
     }
 
     // ------------------------------------------------------------------ 设备私钥（Keystore）
