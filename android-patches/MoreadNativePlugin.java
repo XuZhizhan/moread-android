@@ -66,7 +66,11 @@ import javax.crypto.spec.PSource;
 public class MoreadNativePlugin extends Plugin {
 
     private static final String KEYSTORE = "AndroidKeyStore";
-    private static final String KEY_ALIAS = "moread_device_rsa";
+    /* v2：2026-11-15 换别名，让设备上换一套**重新生成**的密钥。
+       旧钥匙是按「只授权 SHA-256」建的，而 OAEP 的 MGF1 老通路会带 SHA-1，
+       Keystore 在 init 阶段就拒（真机：InvalidKeyException: Keystore operation failed）。
+       换别名 = 不改旧条目、不删数据，新参数下一次 ensure 自然生效。 */
+    private static final String KEY_ALIAS = "moread_device_rsa_v2";
     private static final String NOTIF_CHANNEL = "moread";
     private static final String IMPORT_DIR = "imports";
 
@@ -274,7 +278,11 @@ public class MoreadNativePlugin extends Plugin {
                         KEY_ALIAS,
                         KeyProperties.PURPOSE_DECRYPT | KeyProperties.PURPOSE_ENCRYPT)
                         .setKeySize(2048)
-                        .setDigests(KeyProperties.DIGEST_SHA256)
+                        /* SHA-1 也要授权：某些 ROM 的 Keystore 在 OAEP 上会按
+                           「变换名里隐含的 MGF1」来校验摘要，而老通路隐含 SHA-1。
+                           我们不主动用 SHA-1（OAEP 参数里写的是 SHA-256/SHA-256），
+                           这里只是不再让引擎在 init 阶段就把操作拒掉。 */
+                        .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA1)
                         .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_OAEP)
                         .setUserAuthenticationRequired(false)
                         .build();
@@ -316,25 +324,56 @@ public class MoreadNativePlugin extends Plugin {
     private static final OAEPParameterSpec OAEP_SHA256 = new OAEPParameterSpec(
             "SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT);
 
+    /* 解封装的两条变换要都试：同样是 OAEP-SHA256，各家 ROM 对「变换名 + 参数」的校验不一样。
+       · RSA/ECB/OAEPPadding —— 完全由 OAEPParameterSpec 决定摘要与 MGF1（首选）
+       · RSA/ECB/OAEPWithSHA-256AndMGF1Padding —— 名字里隐含一套默认参数，部分机型只认这条
+       真机 2026-11-15（build-13）两条里的后者报 InvalidKeyException: Keystore operation
+       failed —— 那是 Keystore 在 init 阶段按「变换隐含的 MGF1=SHA-1」校验摘要授权被拒，
+       所以这一版同时把密钥换成 v2（允许 SHA-256+SHA-1）并优先走 OAEPPadding。 */
+    private static final String[] UNWRAP_TRANSFORMS = {
+            "RSA/ECB/OAEPPadding",
+            "RSA/ECB/OAEPWithSHA-256AndMGF1Padding"
+    };
+
     @PluginMethod
     public void secureKeyUnwrap(PluginCall call) {
         String wrappedB64 = call.getString("wrappedKeyB64", "");
+        byte[] wrapped;
         try {
-            byte[] wrapped = Base64.decode(wrappedB64, Base64.NO_WRAP);
-            Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
-            cipher.init(Cipher.DECRYPT_MODE, getPrivateKey(), OAEP_SHA256);
-            byte[] raw = cipher.doFinal(wrapped);
-            JSObject r = new JSObject();
-            r.put("ok", true);
-            r.put("rawKeyB64", Base64.encodeToString(raw, Base64.NO_WRAP));
-            call.resolve(r);
+            wrapped = Base64.decode(wrappedB64, Base64.NO_WRAP);
         } catch (Exception e) {
-            /* 失败也要说清到底是哪一种：只回 "unwrap-failed" 时，前端看到的只有
-               「解回来对不上」，分不出是 Keystore 没建、摘要不匹配还是填充不对。 */
-            JSObject o = ok(false, "unwrap-failed");
-            o.put("detail", e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage()));
+            JSObject o = ok(false, "bad-input");
+            o.put("detail", e.getClass().getSimpleName());
             call.resolve(o);
+            return;
         }
+
+        StringBuilder errs = new StringBuilder();
+        for (String t : UNWRAP_TRANSFORMS) {
+            try {
+                Cipher cipher = Cipher.getInstance(t);
+                cipher.init(Cipher.DECRYPT_MODE, getPrivateKey(), OAEP_SHA256);
+                byte[] raw = cipher.doFinal(wrapped);
+                JSObject r = new JSObject();
+                r.put("ok", true);
+                r.put("rawKeyB64", Base64.encodeToString(raw, Base64.NO_WRAP));
+                r.put("via", t);   // 哪条变换通的不影响结论，但排查时值钱
+                call.resolve(r);
+                return;
+            } catch (Exception e) {
+                if (errs.length() > 0) errs.append(" | ");
+                errs.append(t).append(" → ")
+                        .append(e.getClass().getSimpleName()).append(": ")
+                        .append(String.valueOf(e.getMessage()));
+            }
+        }
+        /* 两条都不通才回失败，并把每条的错误原样带上：
+           只回 "unwrap-failed" 的代价已经付过一次（又打了一个包）。
+           机型与 SDK 一起带上 —— 这类问题几乎都是某个 ROM 的 Keystore 行为差异，
+           没有这两个数字，下一轮还是得猜。 */
+        JSObject o = ok(false, "unwrap-failed");
+        o.put("detail", "sdk=" + Build.VERSION.SDK_INT + ", model=" + Build.MODEL + " | " + errs);
+        call.resolve(o);
     }
 
     @PluginMethod
