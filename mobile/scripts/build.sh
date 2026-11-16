@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 墨读 Android 壳：生成 Capacitor 工程 → 去掉开屏画面 → 注入插件 → sync。
+# 悦读星球 Android 壳：生成 Capacitor 工程 → 图标 → 开屏 → 注入插件 → sync。
 # CI 里由 scripts/ci.sh 调用；本地手跑也是这一句。
 #
 # 依赖：Node 22+、JDK 21、Android SDK（compileSdk 36）
@@ -29,13 +29,43 @@ npm install
 step "生成 android 平台"
 [ -d android ] || npx cap add android
 
+step "应用图标（源：android-patches/moread_icon.svg）"
+# 一份矢量出全部档位：五档 mipmap + 自适应图标的前景/背景 + 主题图标（v33 monochrome）。
+# 这样改图只改一个文件，不会出现「换了 192 忘了 48」；仓库里也不会有二进制图标。
+# 摆放规则见 scripts/make-icons.mjs 文件头：自适应那层必须收进安全区（108dp 画布里只承诺 72dp），
+# 老的 mipmap PNG 那档没有蒙版，保持铺满。
+node scripts/make-icons.mjs android/app/src/main/res android-patches/moread_icon.svg
+
+step "应用名（只改显示名，不动身份）"
+# appName 只在 `cap add android` 那一次被写进 values/strings.xml。本地如果已经有 android/
+# 目录，上面那行会跳过 cap add，名字就还是旧的 —— 所以这里按配置再覆盖一遍。
+# **只动 app_name 与 title_activity_main**：package_name / custom_url_scheme 是身份，
+# 改一个字就是另一个应用（老用户的数据、商店里的自己全部对不上）。
+# 找不到键时只警告不中断：名字错了在桌面上一眼就看见，不该为它挡住整条构建。
+node -e '
+  const fs = require("fs");
+  const name = JSON.parse(fs.readFileSync("capacitor.config.json", "utf8")).appName;
+  const p = process.argv[1];
+  let s = fs.readFileSync(p, "utf8");
+  let hit = 0;
+  for (const key of ["app_name", "title_activity_main"]) {
+    const re = new RegExp("(<string name=\"" + key + "\">)[^<]*(</string>)");
+    if (!re.test(s)) { console.log("⚠ strings.xml 里没有 " + key + "，跳过（cap add 生成时应已写好）"); continue; }
+    s = s.replace(re, "$1" + name + "$2");
+    hit++;
+  }
+  fs.writeFileSync(p, s);
+  console.log("应用名 = " + name + "（覆盖 " + hit + " 处）");
+' android/app/src/main/res/values/strings.xml
+
 step "去掉开屏画面（只留纸色底）"
 # 模板的 AppTheme.NoActionBarLaunch 挂的是 @drawable/splash —— Capacitor 标志那 11 张图。
 # 冷启动时这张图要一直挂到 WebView 画出第一帧，壳加载的是线上页面，网一慢就成了「开屏很久」。
 # 换成纯色之后没有 logo 可看，观感是「页面在加载」，而不是「卡在启动图上」。
 #
-# 图标这一版不动：保持模板自带那张。等自己设计的图标出来再换
-# （换法见 docs/02-architecture/android-shell-build.md 第 8 节，那套流程验过一遍了）。
+# 这里只处理开屏；图标由上面「应用图标」一步生成（docs §8.1）。
+# Android 12+ 的启动屏会画应用图标，现在 moread_blank 是把它压掉的那张 ——
+# 要不要改成展示图标，跟「启动窗口挂到 Web 首帧」一起谈（docs §8.2）。
 mkdir -p "$RES/drawable"
 cat > "$RES/values/moread_colors.xml" <<XML
 <?xml version="1.0" encoding="utf-8"?>
