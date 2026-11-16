@@ -74,6 +74,23 @@ public class MoreadNativePlugin extends Plugin {
     private static final String NOTIF_CHANNEL = "moread";
     private static final String IMPORT_DIR = "imports";
 
+    // ------------------------------------------------------------------ 开屏
+
+    /**
+     * Web 侧「书架已经画出来」时调一次，壳收到后把开屏覆盖层淡出。
+     *
+     * 为什么由 Web 决定时机，而不是壳自己等 WebView.onPageFinished：
+     * onPageFinished 只代表「HTML 解析完了」，那时书架还是一片空壳 —— 书在 IndexedDB 里，
+     * 要等 IndexedDB 读完再渲染。真正「用户看见了书架」只有页面自己知道。
+     *
+     * 撤的主动权在 Web，兜底在壳：MainActivity 里 8 秒没等到这一下会显示「网络有点慢 · 重试」。
+     */
+    @PluginMethod
+    public void splashDone(PluginCall call) {
+        MainActivity.notifyWebReady();
+        call.resolve();
+    }
+
     // ------------------------------------------------------------------ 通知
 
     @PluginMethod
@@ -107,10 +124,11 @@ public class MoreadNativePlugin extends Plugin {
                 PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0));
 
         Notification n = new Notification.Builder(ctx, NOTIF_CHANNEL)
-                /* 小图标必须是**单色剪影**。原来塞的是应用图标（自适应图标），
-                   Android 8+ 画不出来，通知栏上会是个白方块。这里先用系统自带的小闹钟，
-                   等自己那套图标做了再换成项目里的单色版。 */
-                .setSmallIcon(android.R.drawable.ic_popup_reminder)
+                /* 小图标必须是**单色剪影**（系统只读 alpha，颜色一律转白）。
+                   原来塞的是应用图标（自适应图标），Android 8+ 画不出来，通知栏上是个白方块；
+                   后来退回系统自带的小铃铛。现在用 scripts/make-icons.mjs 单独生成的
+                   ic_stat_moread —— 从图标源里挑出「读」字那一组子路径，按 22/24 撑满渲染。 */
+                .setSmallIcon(R.drawable.ic_stat_moread)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setContentIntent(pi)
