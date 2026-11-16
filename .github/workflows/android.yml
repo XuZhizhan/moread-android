@@ -20,12 +20,28 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: 把根目录的壳文件归位到 mobile/
+      # 壳的源码只有一份，就在 mobile/ 下。
+      # 原来的写法是「根目录放一份 → rm -rf mobile → 再从根目录 cp 回来」，
+      # 结果传到 mobile/ 的新文件会被这一步整个删掉，
+      # 构建用的永远是根目录那份旧文件（图标 / 应用名 / 固定签名都进不去）。
+      - name: 检查壳文件齐全
         run: |
-          rm -rf mobile
-          mkdir -p mobile
-          cp package.json capacitor.config.json mobile/
-          cp -r scripts android-patches mobile/
+          set -e
+          for f in mobile/scripts/build.sh \
+                   mobile/scripts/ci.sh \
+                   mobile/scripts/make-icons.mjs \
+                   mobile/scripts/svg-vector.mjs \
+                   mobile/scripts/patch-signing.mjs \
+                   mobile/scripts/moread-debug.p12 \
+                   mobile/capacitor.config.json \
+                   mobile/package.json \
+                   mobile/android-patches/moread_icon.svg \
+                   mobile/android-patches/MoreadNativePlugin.java \
+                   mobile/android-patches/ReminderReceiver.java \
+                   mobile/android-patches/MainActivity.java; do
+            test -f "$f" || { echo "缺 $f：构建会用到它，先补上"; exit 1; }
+          done
+          ls -l mobile/scripts mobile/android-patches
 
       - name: 构建并发布
         env:
