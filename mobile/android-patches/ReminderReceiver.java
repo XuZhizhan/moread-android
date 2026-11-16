@@ -45,7 +45,7 @@ public class ReminderReceiver extends BroadcastReceiver {
 
         Notification n = new Notification.Builder(context, "moread")
                 /* 单色剪影，不能用应用图标（自适应图标在通知栏画成白方块） */
-                .setSmallIcon(android.R.drawable.ic_popup_reminder)
+                .setSmallIcon(R.drawable.ic_stat_moread)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setContentIntent(pi)
