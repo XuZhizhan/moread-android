@@ -13,10 +13,11 @@
  *   mipmap-anydpi-v26/ic_launcher.xml, ic_launcher_round.xml        自适应图标
  *   mipmap-anydpi-v33/ic_launcher.xml, ic_launcher_round.xml        同上 + monochrome（主题图标）
  *   drawable/ic_launcher_foreground.xml                             前景：白字矢量，收进 85.6%
+ *   drawable-v24/ic_launcher_foreground.xml                         同上（API 24+ 优先取这一份）
  *   drawable/ic_launcher_background.xml                             背景：纯色 #2E9BFF
  *
  * 两条摆放规则，各有理由：
- *   · 自适应图标必须**收进安全区**：108dp 画布里系统只承诺中间 72dp，蒙版圆半径 36dp，
+ *   · 自适应图标必须收进安全区：108dp 画布里系统只承诺中间 72dp，蒙版圆半径 36dp，
  *     而这幅图墨迹占 64.3%×65.4%（69.4×70.6dp），铺满时圆形蒙版会把四个角咬掉。
  *     缩到 85.6% 后墨迹 59.4×60.5dp，四种蒙版都不切（UI/icon-check 里有四张对照渲图）。
  *   · 老的 mipmap PNG（API<26 才会用到）保持铺满 —— 那一档没有蒙版，铺满才不显小。
@@ -66,6 +67,38 @@ const put = (rel, buf) => {
   written.push(rel);
 };
 
+/* ---------- 0. 先清掉模板的前景残留 ----------
+ * Capacitor 模板把自适应图标的前景放在 drawable-v24/ic_launcher_foreground.xml。
+ * Android 的资源匹配里「-v24」比「无后缀」更具体 —— API 24+ 一律优先取 v24 那份，
+ * 所以我们写到 drawable/ 的矢量永远轮不上（真机表现：桌面还是模板那个 logo）。
+ * 处理办法不是挑一个目录写，而是先把所有 drawable- 与 mipmap- 目录下的同名文件清掉，
+ * 再往 drawable/ 与 drawable-v24/ 各写一份 —— 任何限定符组合都只会命中我们的。
+ */
+const purged = [];
+if (fs.existsSync(RES)) {
+  for (const d of fs.readdirSync(RES, { withFileTypes: true })) {
+    if (!d.isDirectory()) continue;
+    const dir = path.join(RES, d.name);
+    if (/^drawable/.test(d.name)) {
+      for (const f of fs.readdirSync(dir)) {
+        // $ic_launcher_foreground__0.xml 是 aapt 对模板矢量的中间产物，源文件删了它也不该留
+        if (/^\$?ic_launcher_foreground(__0)?\.xml$/.test(f)) {
+          fs.rmSync(path.join(dir, f), { force: true });
+          purged.push(d.name + '/' + f);
+        }
+      }
+    }
+    if (/^mipmap/.test(d.name)) {
+      for (const f of fs.readdirSync(dir)) {
+        if (/^ic_launcher_foreground.*\.(png|webp)$/.test(f)) {
+          fs.rmSync(path.join(dir, f), { force: true });
+          purged.push(d.name + '/' + f);
+        }
+      }
+    }
+  }
+}
+
 /* ---------- 1. 传统 mipmap PNG（API < 26 的兜底） ---------- */
 for (const [name, px] of DENSITIES) {
   put(`mipmap-${name}/ic_launcher.png`,
@@ -82,7 +115,7 @@ const fgPaths = paths.map((p) =>
   `        <path\n            android:fillColor="${esc(p.fill || FG)}"\n            android:pathData="${esc(p.d)}" />`
 ).join('\n');
 
-put('drawable/ic_launcher_foreground.xml', `<?xml version="1.0" encoding="utf-8"?>
+const FG_XML = `<?xml version="1.0" encoding="utf-8"?>
 <!-- 由 scripts/make-icons.mjs 从 android-patches/moread_icon.svg 生成，不要手改。
      108dp 画布里只承诺中间 72dp，所以整幅缩到 ${(INSET * 100).toFixed(1)}% 居中。 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -98,7 +131,11 @@ put('drawable/ic_launcher_foreground.xml', `<?xml version="1.0" encoding="utf-8"
 ${fgPaths}
     </group>
 </vector>
-`);
+`;
+
+// 两份内容完全相同：drawable/ 兜底，drawable-v24/ 赢过模板的限定符
+put('drawable/ic_launcher_foreground.xml', FG_XML);
+put('drawable-v24/ic_launcher_foreground.xml', FG_XML);
 
 put('drawable/ic_launcher_background.xml', `<?xml version="1.0" encoding="utf-8"?>
 <!-- 图标底色。写成 drawable 而不是 @color，避免和模板 values/ 里的同名 color 冲突。 -->
@@ -129,9 +166,22 @@ for (const [name, px] of DENSITIES) {
     problems.push(`mipmap-${name}/ic_launcher.png 尺寸不是 ${px}×${px}`);
   }
 }
-const fgXml = fs.readFileSync(path.join(RES, 'drawable/ic_launcher_foreground.xml'), 'utf8');
-if (!/android:scaleX="0\.856"/.test(fgXml)) problems.push('前景层没缩到 0.856，圆蒙版会咬四角');
-if (!/android:pathData="M/.test(fgXml)) problems.push('前景层里没有路径数据');
+/* 两个路径都要有：只有 drawable/ 时，API 24+ 会拿模板那份顶上 */
+for (const rel of ['drawable/ic_launcher_foreground.xml', 'drawable-v24/ic_launcher_foreground.xml']) {
+  const p2 = path.join(RES, rel);
+  if (!fs.existsSync(p2)) { problems.push(rel + ' 不存在：API 24+ 会退回别的限定符'); continue; }
+  const s2 = fs.readFileSync(p2, 'utf8');
+  if (!/android:scaleX="0\.856"/.test(s2)) problems.push(rel + ' 没缩到 0.856，圆蒙版会咬四角');
+  if (!/android:pathData="M/.test(s2)) problems.push(rel + ' 里没有路径数据');
+}
+/* 清完之后不该再有任何模板的前景残留 */
+for (const d of fs.readdirSync(RES, { withFileTypes: true })) {
+  if (!d.isDirectory()) continue;
+  const dir = path.join(RES, d.name);
+  if (/^mipmap/.test(d.name) && fs.readdirSync(dir).some((f) => /^ic_launcher_foreground/.test(f))) {
+    problems.push(d.name + ' 里还留着模板的 ic_launcher_foreground 位图');
+  }
+}
 if (!new RegExp(BRAND, 'i').test(fs.readFileSync(path.join(RES, 'drawable/ic_launcher_background.xml'), 'utf8'))) {
   problems.push('背景色不是 ' + BRAND);
 }
