@@ -1,6 +1,6 @@
 {
   "appId": "com.moread.reader",
-  "appName": "墨读",
+  "appName": "悦读星球",
   "webDir": "../dist",
   "server": {
     "androidScheme": "https",
