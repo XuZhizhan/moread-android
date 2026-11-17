@@ -41,7 +41,15 @@ trap on_fail ERR
 echo "== 抓取线上前端（打包进 APK）=="
 # 壳不再用 server.url 指线上，改成加载 APK 内的 dist。这份 dist 必须**就是线上那份**：
 # 抓不全脚本会非零退出，这一步失败比出一个「某个页面 404」的包强得多。
-node mobile/scripts/fetch-web.mjs dist
+#
+# 顺手把「包内是哪一版前端」记下来，写进 release 说明。
+# 为什么值这一行：包里是旧前端时，build 号、版本号、界面全都正常，
+# 只有刚修的那处不生效 —— 在 release 页面上一眼对得上，比翻 Actions 日志快。
+# 注意必须在这里取：下一行 build.sh 会用 `tee build.log`（不带 -a）把日志覆盖掉。
+node mobile/scripts/fetch-web.mjs dist 2>&1 | tee -a build.log
+WEB_APP="$(grep -o 'app 指纹: app\.[0-9a-f]*\.js' build.log | tail -1 | sed 's/.*: //' || true)"
+WEB_VER="$(grep -o "版本: [^ ]*" build.log | tail -1 | sed 's/版本: //' || true)"
+echo "包内前端：${WEB_APP:-未取到} / 版本 ${WEB_VER:-未取到}"
 
 echo "== 生成 android 工程并注入插件 =="
 bash mobile/scripts/build.sh setup 2>&1 | tee build.log
@@ -62,6 +70,7 @@ SIZE="$(du -h moread-debug.apk | cut -f1)"
   echo ""
   echo "- APK 大小：$SIZE"
   echo "- commit：\`${GITHUB_SHA:-local}\`"
+  echo "- 包内前端：\`${WEB_APP:-未取到}\` / 版本 \`${WEB_VER:-未取到}\`"
   echo ""
   echo "下载后直接安装（debug 签名，需允许「安装未知来源应用」）。"
 } >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
@@ -73,8 +82,10 @@ gh release create "$TAG" moread-debug.apk \
   --notes "自动构建的 debug 内测包，下载后直接安装。
 
 - commit: \`${GITHUB_SHA:-local}\`
-- 前端：构建时从线上抓取，已打进包里（不再远程加载页面）
-- 因此**每次改前端都要重出一次包**；只装了旧包的设备看不到新界面" \
+- 包内前端：\`${WEB_APP:-未取到}\` / 版本 \`${WEB_VER:-未取到}\`
+- 前端是构建时从线上抓的，已打进包里（不再远程加载页面）
+- 因此**每次改前端都要重出一次包**；只装了旧包的设备看不到新界面
+- 判断包里是不是最新前端：把上面这行与线上首页 index.html 引用的 app.*.js 对一下" \
   || gh release upload "$TAG" moread-debug.apk --clobber
 
 echo "== 完成：$TAG =="
