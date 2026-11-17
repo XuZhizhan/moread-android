@@ -16,6 +16,13 @@
  * 用法：node mobile/scripts/fetch-web.mjs [目标目录] [站点根]
  *   站点根默认 https://moread-66776.app.workbuddy.host
  *   分享码用环境变量 MOREAD_SHARE 覆盖（默认值写死没关系：它是公开的分享链接参数）
+ *
+ * 发布顺序（2026-11-17 起，这条是硬的）：
+ *   ① 先发 Web —— 改完前端跑 build.mjs 再发布；
+ *   ② 再出包 —— 这个脚本把线上那份抓进来。
+ *   反过来做会打出一个「用旧前端」的包，而它的版本号、build 号、界面全都正常，
+ *   只有你刚修的那处没生效。上线时最常见的误判就是这个。
+ *   判据：构建日志最后那行「app 指纹」必须和线上首页 index.html 里引用的一致。
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -104,6 +111,11 @@ async function main() {
 
   console.log('抓取完成 → ' + OUT + '/');
   console.log('  版本: ' + version);
+  /* 这一行是「包里到底是哪一版前端」的唯一凭据。它必须与线上首页 index.html
+     里引用的那个 app.*.js 一致 —— 不一致就说明这次抓的是旧页面（缓存、或者
+     发布还没生效就出了包），包能装上、界面也正常，只有你刚改的那处不生效。 */
+  const appRef = (html.match(/app\.[0-9a-f]{8}\.js/) || ['(没找到)'])[0];
+  console.log('  app 指纹: ' + appRef);
   console.log('  清单: precache ' + precache.length + ' + lazy ' + lazy.length + ' + 自身 ' + extras.length);
   console.log('  落地: ' + files.length + ' 个文件 / ' + Math.round(bytes / 1024) + 'KB');
 }
