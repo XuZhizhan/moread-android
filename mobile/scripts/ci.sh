@@ -68,15 +68,30 @@ cp "$APK" moread-debug.apk
 ls -lh moread-debug.apk
 SIZE="$(du -h moread-debug.apk | cut -f1)"
 
-# tag 用「上一个 release 的编号 +1」，**不用** GITHUB_RUN_NUMBER：
+# tag 用「历史上最大的 build-N + 1」，**不用** GITHUB_RUN_NUMBER：
 # run number 是这个 workflow 的累计跑数，失败一次就永久跳号（该出 build-35 的那次
 # 会变成 build-36），而人是在按编号比对版本的 —— 跳号看起来像漏发了一版。
-# 从 Releases 推导就永远连续，重跑也不会重号（同名 tag 走 upload --clobber）。
-LAST_TAG="$(gh release list --limit 1 --exclude-drafts 2>/dev/null | awk '{print $1}' | head -1)"
-LAST_NO="${LAST_TAG#build-}"
-case "$LAST_NO" in ''|*[!0-9]*) LAST_NO=0 ;; esac
-TAG="build-$((LAST_NO + 1))"
-echo "本次 tag：$TAG（上一个：${LAST_TAG:-无}）"
+#
+# 2026-11-18 修正：原来写的是 `gh release list --limit 1`，那个组合在 CI 里
+# 返回过空（于是 LAST_NO=0，建出了一个 build-1）。改成把全部 build-N 取出来
+# 按**数字**排序取最大 —— 不受默认排序影响，也不怕历史里混进怪名字。
+# 用 set +e 包住：这一段取不到编号不该打断构建，后面有兜底。
+set +e
+LAST_NO="$(gh release list --limit 100 2>/dev/null \
+  | awk '{print $1}' \
+  | grep -E '^build-[0-9]+$' \
+  | sed 's/^build-//' \
+  | sort -n \
+  | tail -1)"
+set -e
+if [ -n "$LAST_NO" ]; then
+  TAG="build-$((LAST_NO + 1))"
+  echo "本次 tag：$TAG（历史最大：build-$LAST_NO）"
+else
+  # 取不到历史编号时用时间戳，**不要**退回 0 —— 那会撞出一个 build-1
+  TAG="build-$(date +%m%d%H%M)"
+  echo "⚠ 取不到历史 release 编号，用时间戳兜底：$TAG"
+fi
 
 {
   echo "### 悦读星球 Android 壳 $TAG"
