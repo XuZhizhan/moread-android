@@ -72,26 +72,28 @@ SIZE="$(du -h moread-debug.apk | cut -f1)"
 # run number 是这个 workflow 的累计跑数，失败一次就永久跳号（该出 build-35 的那次
 # 会变成 build-36），而人是在按编号比对版本的 —— 跳号看起来像漏发了一版。
 #
-# 2026-11-18 修正：原来写的是 `gh release list --limit 1`，那个组合在 CI 里
-# 返回过空（于是 LAST_NO=0，建出了一个 build-1）。改成把全部 build-N 取出来
-# 按**数字**排序取最大 —— 不受默认排序影响，也不怕历史里混进怪名字。
-# 用 set +e 包住：这一段取不到编号不该打断构建，后面有兜底。
+# 这里踩过两次，两次都是「拿不到 tag 列表」引起的，记下来别再犯：
+#   ① `gh release list | awk '{print $1}'` —— 默认输出的**第一列是标题**不是 tag
+#      （列序是 TITLE / TYPE / TAG NAME / PUBLISHED），于是 grep 全过滤掉，
+#      空结果退回 0，建出了一个 build-1。
+#   ② 退回 0 这个兜底本身就是错的：名字错了的包会被当成最新版发出去。
+# 所以：用 --json 取结构化字段，并把「取不到」当成硬错误 —— 宁可不发包。
+# 另外编号限定 1-4 位：历史上混进过 build-11171924 这种时间戳 tag，别让它把最大值带偏。
 set +e
-LAST_NO="$(gh release list --limit 100 2>/dev/null \
-  | awk '{print $1}' \
-  | grep -E '^build-[0-9]+$' \
+LAST_NO="$(gh release list --limit 100 --json tagName \
+  --template '{{range .}}{{.tagName}}{{"\n"}}{{end}}' 2>/dev/null \
+  | grep -E '^build-[0-9]{1,4}$' \
   | sed 's/^build-//' \
   | sort -n \
   | tail -1)"
 set -e
-if [ -n "$LAST_NO" ]; then
-  TAG="build-$((LAST_NO + 1))"
-  echo "本次 tag：$TAG（历史最大：build-$LAST_NO）"
-else
-  # 取不到历史编号时用时间戳，**不要**退回 0 —— 那会撞出一个 build-1
-  TAG="build-$(date +%m%d%H%M)"
-  echo "⚠ 取不到历史 release 编号，用时间戳兜底：$TAG"
+if [ -z "$LAST_NO" ]; then
+  echo "✗ 取不到历史 build 编号（gh release list 返回空，或全是异常 tag）" >&2
+  echo "  宁可不发包，也不要出一个名字错误的版本 —— 那种包在 Releases 里会被当成最新版。" >&2
+  exit 1
 fi
+TAG="build-$((LAST_NO + 1))"
+echo "本次 tag：$TAG（历史最大：build-$LAST_NO）"
 
 {
   echo "### 悦读星球 Android 壳 $TAG"
