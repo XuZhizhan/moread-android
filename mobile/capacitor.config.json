@@ -2,16 +2,15 @@
   "appId": "com.moread.reader",
   "appName": "悦读星球",
   "webDir": "../dist",
+  "android": {
+    "backgroundColor": "#f4f0e7",
+    "allowMixedContent": false
+  },
   "server": {
     "androidScheme": "https",
-    "url": "https://moread-66776.app.workbuddy.host/?sharecode=SRPBCZNFVG",
     "cleartext": false,
     "allowNavigation": [
       "moread-66776.app.workbuddy.host"
     ]
-  },
-  "android": {
-    "backgroundColor": "#f4f0e7",
-    "allowMixedContent": false
   }
 }
