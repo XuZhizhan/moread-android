@@ -1,7 +1,8 @@
 # 悦读星球 · Android 壳
 
-Capacitor 8.5.1 包一层 WebView，加载线上 Web（`https://moread-66776.app.workbuddy.host`），
-业务、阅读器、加密解密全部照旧 —— 壳只补 Web 做不到的四件事：
+Capacitor 8.5.1 包一层 WebView，**加载 APK 内打包的前端**（构建时按 precache-manifest
+从线上抓取，见 `scripts/fetch-web.mjs`），业务、阅读器、加密解密全部照旧 ——
+壳只补 Web 做不到的四件事：
 
 | 能力 | 实现 | Web 侧契约 |
 |---|---|---|
@@ -23,25 +24,55 @@ Capacitor 8.5.1 包一层 WebView，加载线上 Web（`https://moread-66776.app
 
 ## 为什么壳这么小
 
-Web 是唯一部署点。壳启动后直接加载线上域名，**Origin 不变**，登录 / 借阅 / 许可 / 对象存储全部照旧。
-代价是断网打不开（已下载的书仍在本地设备上）。
+前端只有一个发布点（线上站点），但 APK **不是**打开线上网页 —— 它加载的是构建时抓进包里的
+那份 dist。这样冷启动不用先下 700KB 网页，代价是**前端改了必须重出包**：
 
-因此：**改界面、改阅读器、修 Web 上的 bug，都不需要重新出包** —— 打开 App 就是最新版。
-只有壳本身（插件、权限、图标、targetSdk）变了才需要再构建一次。
+| 改了什么 | 要不要重出包 |
+|---|---|
+| 界面、阅读器、Web 上的 bug | 要（包内 dist 是死的，打开 App 不会变成最新版） |
+| 壳本身（插件、权限、图标、targetSdk） | 要 |
+
+发布顺序因此是硬的：**先发 Web，再出包**。反过来会打出一个「版本号正常、界面正常、
+只有刚修的那处不生效」的包 —— 这种误判在 build 号上完全看不出来（build-30 就是这么废的）。
+
+### 换 origin 的代价（build-31 起）
+
+去掉 `server.url` 之后，页面 origin 从站点域名变成 `https://localhost`，**所有请求从同源变成跨域**。
+跨域会先走 CORS 预检，服务端只放行一份固定的头白名单；请求里多带一个白名单外的头，
+浏览器就把**整个请求拒发**，前端只能拿到 `TypeError: Failed to fetch` ——
+表现是「网络明明是好的，某个功能就是不通」，极容易往网络故障上误判。
+
+已经踩过一次：云存储 SDK 默认给每个存储请求挂 `x-client-info: storage-js/2.x`，
+它不在白名单里，于是封面一片空白、点下载报「网络连接中断」，而借阅列表
+（只带 content-type + 访问密钥两个白名单内的头）一切正常。修法在 Web 侧的 `cloud.js`
+（建好云客户端后把白名单外的头摘掉）。
+
+**以后要往前端请求里加自定义头，先做一次预检核对：**
+
+```bash
+curl -s -o /dev/null -D - -X OPTIONS \
+  'https://moread-66776.app.workbuddy.host/.cloud/storage/object/runtime/x' \
+  -H 'Origin: https://localhost' \
+  -H 'Access-Control-Request-Method: GET' \
+  -H 'Access-Control-Request-Headers: <要加的那个头>'
+```
+
+回包的 `Access-Control-Allow-Headers` 里没列出它，就不能加 —— 同源时代看不出问题，
+改成包内加载后才会突然全线失败。
 
 ## 目录
 
 ```
 mobile/
 ├── package.json              Capacitor 8.5.1（锁版本）
-├── capacitor.config.json     appId / appName / 远程 URL / https scheme
+├── capacitor.config.json     appId / appName / https scheme（无 server.url = 走包内 dist）
 ├── scripts/build.sh          setup / debug / release 一键构建
 ├── android-patches/          注入进 android 平台的源码
 │   ├── MoreadNativePlugin.java   四个原生能力（431 行）
 │   ├── ReminderReceiver.java     每日提醒的闹钟接收者
 │   └── MainActivity.java         注册插件
 └── android/                  cap add android 生成（.gitignore，CI 里现生成）
-dist/index.html               占位：server.url 模式下不参与运行
+dist/                         构建时从线上抓的前端（仓库里是占位页，CI 里被整体替换）
 ```
 
 ## 本地构建（可选）
