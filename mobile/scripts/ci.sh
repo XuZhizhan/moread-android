@@ -49,7 +49,10 @@ echo "== 抓取线上前端（打包进 APK）=="
 node mobile/scripts/fetch-web.mjs dist 2>&1 | tee -a build.log
 WEB_APP="$(grep -o 'app 指纹: app\.[0-9a-f]*\.js' build.log | tail -1 | sed 's/.*: //' || true)"
 WEB_VER="$(grep -o "版本: [^ ]*" build.log | tail -1 | sed 's/版本: //' || true)"
-echo "包内前端：${WEB_APP:-未取到} / 版本 ${WEB_VER:-未取到}"
+# cloud 单独记一笔：跨域、CORS 头、云存储这类问题全长在这个文件里。
+# 包内是旧 cloud.js 时，症状和「网络故障」一模一样 —— 先看版本能省掉一整轮排查。
+WEB_CLOUD="$(grep -oE 'cloud\.[0-9a-f]{8}\.js' dist/index.html | head -1 || true)"
+echo "包内前端：${WEB_APP:-未取到} / cloud ${WEB_CLOUD:-未取到} / 版本 ${WEB_VER:-未取到}"
 
 echo "== 生成 android 工程并注入插件 =="
 bash mobile/scripts/build.sh setup 2>&1 | tee build.log
@@ -65,24 +68,32 @@ cp "$APK" moread-debug.apk
 ls -lh moread-debug.apk
 SIZE="$(du -h moread-debug.apk | cut -f1)"
 
+# tag 用「上一个 release 的编号 +1」，**不用** GITHUB_RUN_NUMBER：
+# run number 是这个 workflow 的累计跑数，失败一次就永久跳号（该出 build-35 的那次
+# 会变成 build-36），而人是在按编号比对版本的 —— 跳号看起来像漏发了一版。
+# 从 Releases 推导就永远连续，重跑也不会重号（同名 tag 走 upload --clobber）。
+LAST_TAG="$(gh release list --limit 1 --exclude-drafts 2>/dev/null | awk '{print $1}' | head -1)"
+LAST_NO="${LAST_TAG#build-}"
+case "$LAST_NO" in ''|*[!0-9]*) LAST_NO=0 ;; esac
+TAG="build-$((LAST_NO + 1))"
+echo "本次 tag：$TAG（上一个：${LAST_TAG:-无}）"
+
 {
-  echo "### 悦读星球 Android 壳 build ${GITHUB_RUN_NUMBER:-local}"
+  echo "### 悦读星球 Android 壳 $TAG"
   echo ""
   echo "- APK 大小：$SIZE"
   echo "- commit：\`${GITHUB_SHA:-local}\`"
-  echo "- 包内前端：\`${WEB_APP:-未取到}\` / 版本 \`${WEB_VER:-未取到}\`"
   echo ""
   echo "下载后直接安装（debug 签名，需允许「安装未知来源应用」）。"
 } >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
 
 # 发到 Releases：每次构建一个 tag，手机端从 Releases 页直接下载
-TAG="build-${GITHUB_RUN_NUMBER:-local}"
 gh release create "$TAG" moread-debug.apk \
-  --title "悦读星球 Android 壳 build ${GITHUB_RUN_NUMBER:-local}" \
+  --title "悦读星球 Android 壳 $TAG" \
   --notes "自动构建的 debug 内测包，下载后直接安装。
 
 - commit: \`${GITHUB_SHA:-local}\`
-- 包内前端：\`${WEB_APP:-未取到}\` / 版本 \`${WEB_VER:-未取到}\`
+- 包内前端：\`${WEB_APP:-未取到}\` / \`${WEB_CLOUD:-未取到}\` / 版本 \`${WEB_VER:-未取到}\`
 - 前端是构建时从线上抓的，已打进包里（不再远程加载页面）
 - 因此**每次改前端都要重出一次包**；只装了旧包的设备看不到新界面
 - 判断包里是不是最新前端：把上面这行与线上首页 index.html 引用的 app.*.js 对一下" \

@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # 悦读星球 Android 壳：生成 Capacitor 工程 → 图标 → 开屏 → 注入插件 → sync。
-# CI 里由 scripts/ci.sh 调用；本地手跑也是这一句。
-#
-# 依赖：Node 22+、JDK 21、Android SDK（compileSdk 36）
+# CI 由 scripts/ci.sh 调用；本地手跑也是这一句。依赖 Node 22+、JDK 21、Android SDK 36。
 set -euo pipefail
 
 cd "$(dirname "$0")/.."   # 回到 mobile/
@@ -11,18 +9,15 @@ JAVA_SRC="android/app/src/main/java/com/moread/reader"
 MANIFEST="android/app/src/main/AndroidManifest.xml"
 RES="android/app/src/main/res"
 
-# 纸色，取自 App 正文底色
-BRAND_PAPER="#F6F1E7"
-# 开屏底色。必须与 Web 开屏六版里最暗的那一版（launch-splash.css 的 #0B1116）一致：
-# 系统启动窗口 → 原生覆盖层 → Web 开屏是三次交接，前两次若用纸色、第三次是深墨，
-# 中间就有一次整屏由浅翻深 —— 那正是「蒙皮色彩不同步」。
-# 02/03 两版是品牌蓝，靠覆盖层 200ms 淡出过渡（变亮比变暗好接受）。
+BRAND_PAPER="#F6F1E7"      # 正文纸色
+# 开屏底色：必须与 launch-splash.css 里最暗那一版（#0B1116）一致。
+# 系统启动窗口 → 原生覆盖层 → Web 开屏是三次交接，前两层若不是这个色，
+# 交接那一下就是整屏由浅翻深 —— 看起来像「画面不同步」，其实是底色在跳。
 BRAND_LAUNCH_BG="#0B1116"
 
 step() { printf '\n\033[1;36m== %s ==\033[0m\n' "$1"; }
 
-# 本机沙箱里 rm 被 shim 包了一层（shebang 指向不存在的 /bin/bash），
-# 在 set -e 下会把整条构建打断。统一走 del()：rm 能用就用，用不了退回 node。
+# 本机沙箱里 rm 被 shim 包了一层，set -e 下会把构建打断。能用 rm 就用，用不了退回 node。
 del() {
   if rm -f -- "$@" 2>/dev/null; then return 0; fi
   node -e 'for (const p of process.argv.slice(1)) { try { require("fs").rmSync(p, { force: true }); } catch (e) {} }' -- "$@"
@@ -35,18 +30,13 @@ step "生成 android 平台"
 [ -d android ] || npx cap add android
 
 step "应用图标（源：android-patches/moread_icon.svg）"
-# 一份矢量出全部档位：五档 mipmap + 自适应图标的前景/背景 + 主题图标（v33 monochrome）。
-# 这样改图只改一个文件，不会出现「换了 192 忘了 48」；仓库里也不会有二进制图标。
-# 摆放规则见 scripts/make-icons.mjs 文件头：自适应那层必须收进安全区（108dp 画布里只承诺 72dp），
-# 老的 mipmap PNG 那档没有蒙版，保持铺满。
+# 一份矢量出全部档位，改图只改一个文件，不会出现「换了 192 忘了 48」
 node scripts/make-icons.mjs android/app/src/main/res android-patches/moread_icon.svg
 
 step "应用名（只改显示名，不动身份）"
-# appName 只在 `cap add android` 那一次被写进 values/strings.xml。本地如果已经有 android/
-# 目录，上面那行会跳过 cap add，名字就还是旧的 —— 所以这里按配置再覆盖一遍。
-# **只动 app_name 与 title_activity_main**：package_name / custom_url_scheme 是身份，
-# 改一个字就是另一个应用（老用户的数据、商店里的自己全部对不上）。
-# 找不到键时只警告不中断：名字错了在桌面上一眼就看见，不该为它挡住整条构建。
+# appName 只在 cap add 那一次写进 strings.xml，本地已有 android/ 时会跳过，所以这里再覆盖一遍。
+# 只动 app_name 与 title_activity_main：package_name / custom_url_scheme 是身份，
+# 改一个字就是另一个应用（老用户的数据全部对不上）。
 node -e '
   const fs = require("fs");
   const name = JSON.parse(fs.readFileSync("capacitor.config.json", "utf8")).appName;
@@ -55,7 +45,7 @@ node -e '
   let hit = 0;
   for (const key of ["app_name", "title_activity_main"]) {
     const re = new RegExp("(<string name=\"" + key + "\">)[^<]*(</string>)");
-    if (!re.test(s)) { console.log("⚠ strings.xml 里没有 " + key + "，跳过（cap add 生成时应已写好）"); continue; }
+    if (!re.test(s)) { console.log("⚠ strings.xml 里没有 " + key + "，跳过"); continue; }
     s = s.replace(re, "$1" + name + "$2");
     hit++;
   }
@@ -63,19 +53,13 @@ node -e '
   console.log("应用名 = " + name + "（覆盖 " + hit + " 处）");
 ' android/app/src/main/res/values/strings.xml
 
-step "去掉开屏画面（只留开屏底色）"
-# 模板的 AppTheme.NoActionBarLaunch 挂的是 @drawable/splash —— Capacitor 标志那 11 张图。
-# 冷启动时这张图要一直挂到 WebView 画出第一帧，观感是「卡在启动图上」。
-# 换成纯色之后没有 logo 可看，观感是「页面在加载」。
-#
-# 这里只处理「系统启动窗口」那一帧 —— 它是系统画的，应用只能给底色和图标。
-# 从 Activity 起到 Web 首帧之间的空窗由 MainActivity 的开屏覆盖层接住
-# （图标 + 进度 + 一句在做什么；8 秒还没画出来就给「网络有点慢 · 重试」）。
-# 系统那一帧只保留纯色：它的图标尺寸是系统定的，和覆盖层里的 84dp 对不上，
-# 硬放进去会「跳」一下；覆盖层里的内容是淡入的，两段之间才看不出接缝。
-#
-# 用 moread_launch_bg（深墨）而不是 moread_paper（纸色）：Web 开屏六版全是深底，
-# 前两层若用浅色，交接那一下是整屏反转。正文纸色仍在别处用，所以两个都留着。
+step "开屏：只留开屏底色"
+# 模板的 @drawable/splash（Capacitor 标志 11 张）要一直挂到 WebView 画出第一帧，
+# 观感是「卡在启动图上」。换成纯色后是「页面在加载」。
+# 这里只处理「系统启动窗口」那一帧 —— 它是系统画的，应用只能给底色和图标；
+# 从 Activity 起到 Web 首帧之间的空窗由 MainActivity 的开屏覆盖层接住。
+# 系统那一帧只留纯色：它的图标尺寸是系统定的，和覆盖层里的 84dp 对不上，
+# 硬放进去会「跳」一下。覆盖层里的内容是淡入的，两段之间才看不出接缝。
 mkdir -p "$RES/drawable"
 cat > "$RES/values/moread_colors.xml" <<XML
 <?xml version="1.0" encoding="utf-8"?>
@@ -84,6 +68,7 @@ cat > "$RES/values/moread_colors.xml" <<XML
     <color name="moread_launch_bg">$BRAND_LAUNCH_BG</color>
 </resources>
 XML
+
 # Android 12+ 的系统启动屏只读 windowSplashScreen*，光改 android:background 不够；
 # 图标塞一张全透明 drawable，让它什么都别画（不然会画应用图标）。
 cat > "$RES/drawable/moread_blank.xml" <<'XML'
@@ -162,19 +147,16 @@ step "sync（把 dist 与插件写进 android 工程）"
 npx cap sync android
 
 # 放到 sync 之后：cap sync 会把 android 工程里它管的文件重写一遍，接线放前面有被覆盖的风险。
-# 这一步只碰 app/build.gradle 的一处 injection，跟 sync 的唯一交集就是「谁后跑」。
 step "固定 debug 签名（后续包可覆盖升级，不必卸载）"
 # CI 每次都是全新机器，AGP 在 ~/.android/debug.keystore 找不到钥匙就临时生成一把 ——
-# 于是每个包的签名都不一样，手机上只能「先卸载再装」，本地书架 / 笔记 / 阅读进度
-# 跟着一起被清掉。仓库里带一份固定 keystore（scripts/moread-debug.p12），构建时复用它：
-# 从 build-16 起所有包同一个签名，直接覆盖安装。
-# 口令就是公开的 android（Android debug 钥匙的惯例），只用于内测；上架要换正式签名（文档 §6.3）。
+# 于是每个包签名都不一样，手机上只能「先卸载再装」，本地书架 / 笔记 / 进度一起被清掉。
+# 仓库里带一份固定 keystore，从 build-16 起所有包同一签名。口令是公开的 android，仅内测用；
+# 上架要换正式签名。
 KS="scripts/moread-debug.p12"
 if [ -f "$KS" ] && keytool -list -keystore "$KS" -storetype PKCS12 -storepass android >/dev/null 2>&1; then
   cp "$KS" android/app/moread-debug.p12
   node scripts/patch-signing.mjs android/app/build.gradle
-  # 指纹打进日志：以后要判断「这两个包能不能互相覆盖」，看这一行对不对得上就够了。
-  # 末尾兜一个 || ：上面已经证明钥匙能读，这里再失败也不该把整条构建打断（set -o pipefail）。
+  # 指纹打进日志：判断「两个包能不能互相覆盖」，看这一行对不对得上就够了
   keytool -list -v -keystore "$KS" -storetype PKCS12 -storepass android 2>/dev/null | node -e '
     let s = "";
     process.stdin.on("data", (d) => { s += d; });
@@ -186,8 +168,7 @@ if [ -f "$KS" ] && keytool -list -keystore "$KS" -storetype PKCS12 -storepass an
 else
   WHY="scripts/moread-debug.p12 不可用（文件缺失，或 keytool 读不出来）"
   if [ "${GITHUB_ACTIONS:-}" = "true" ]; then
-    # 悄悄退回临时签名比构建失败更糟：CI 是绿的、Release 里有包，手机上却装不上，
-    # 真正的原因还得再翻一遍日志才发现。宁可这个包出不来。
+    # 悄悄退回临时签名比构建失败更糟：CI 是绿的、Release 里有包，手机上却装不上
     echo "✗ $WHY —— CI 里不许退回 AGP 临时签名，先把这把钥匙修好" >&2
     exit 1
   fi
