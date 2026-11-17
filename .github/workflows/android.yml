@@ -29,6 +29,7 @@ jobs:
           set -e
           for f in mobile/scripts/build.sh \
                    mobile/scripts/ci.sh \
+                   mobile/scripts/fetch-web.mjs \
                    mobile/scripts/make-icons.mjs \
                    mobile/scripts/svg-vector.mjs \
                    mobile/scripts/patch-signing.mjs \

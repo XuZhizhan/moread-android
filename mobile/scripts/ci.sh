@@ -38,6 +38,11 @@ on_fail() {
 }
 trap on_fail ERR
 
+echo "== 抓取线上前端（打包进 APK）=="
+# 壳不再用 server.url 指线上，改成加载 APK 内的 dist。这份 dist 必须**就是线上那份**：
+# 抓不全脚本会非零退出，这一步失败比出一个「某个页面 404」的包强得多。
+node mobile/scripts/fetch-web.mjs dist
+
 echo "== 生成 android 工程并注入插件 =="
 bash mobile/scripts/build.sh setup 2>&1 | tee build.log
 
@@ -68,7 +73,8 @@ gh release create "$TAG" moread-debug.apk \
   --notes "自动构建的 debug 内测包，下载后直接安装。
 
 - commit: \`${GITHUB_SHA:-local}\`
-- 壳只加载线上 Web：以后改界面 / 改阅读器都不用重新装包" \
+- 前端：构建时从线上抓取，已打进包里（不再远程加载页面）
+- 因此**每次改前端都要重出一次包**；只装了旧包的设备看不到新界面" \
   || gh release upload "$TAG" moread-debug.apk --clobber
 
 echo "== 完成：$TAG =="
