@@ -32,15 +32,17 @@ public class MainActivity extends BridgeActivity {
 
     /** 品牌蓝。与图标底色同源（scripts/make-icons.mjs 的 FALLBACK_BRAND）。 */
     private static final int BRAND = 0xFF2E9BFF;
-    /** 提示文字常态色：黑 54%，纸色底上够读又不抢图标。 */
-    private static final int HINT = 0x8A000000;
+    /** 提示文字常态色：白 54%。
+     *  改成白的是因为底色换成了深墨 —— 原来那版是黑 54%（0x8A000000），
+     *  那是为纸色底配的，放到深底上等于隐形。 */
+    private static final int HINT = 0x8AFFFFFF;
 
     private OnBackInvokedCallback backCallback;   // 只在 API 33+ 用得上
 
     /* ---------------- 开屏覆盖层 ----------------
      * 为什么需要它：系统启动窗口在 WebView「画出第一帧」时就撤，而那一帧往往还是空白
-     * （壳加载的是线上页面，要下 680KB 才画得出书架）。撤完之后就是一整片纸色空等，
-     * 观感是「卡住了」。这一层接住那段空窗，把「空等」换成「图标 + 进度 + 一句在做什么」。
+     * （壳加载的是包内页面，要等 HTML/CSS 解析完才画得出第一屏）。撤完之后就是一整片
+     * 底色空等，观感是「卡住了」。这一层接住那段空窗，把「空等」换成「图标 + 进度 + 一句在做什么」。
      *
      * 为什么不用 @capacitor/splash-screen：它要装 npm 依赖、改配置，而这里需要的只是
      * 「一个盖在上面的 View + 一个撤掉它的时机」。自己写几十行比引一个插件可控。
@@ -102,9 +104,11 @@ public class MainActivity extends BridgeActivity {
         if (splash != null) return;
 
         FrameLayout box = new FrameLayout(this);
-        /* 与系统启动窗口同色（build.sh 生成的 moread_paper，取自 App 正文底色）。
-           两处不一致的话，交接那一下会闪一次色差，比没有开屏更难看。 */
-        box.setBackgroundColor(getResources().getColor(R.color.moread_paper, getTheme()));
+        /* 与系统启动窗口同色，也与 Web 开屏六版的底色同一套（深墨 #0B1116）。
+           三段交接只要有一处不是这个色，那一下就是整屏由浅翻深或由深翻浅 ——
+           看起来像「画面不同步」，其实是底色在跳。
+           （02/03 两版是品牌蓝，靠本层 200ms 淡出过渡，变亮比变暗好接受。） */
+        box.setBackgroundColor(getResources().getColor(R.color.moread_launch_bg, getTheme()));
         box.setClickable(true);            // 挡住穿透：加载中点到后面的 WebView 会误触
 
         LinearLayout col = new LinearLayout(this);
@@ -143,7 +147,7 @@ public class MainActivity extends BridgeActivity {
             FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         splash = box;
 
-        /* 系统启动窗口那一帧是纯纸色（见 build.sh「去掉开屏画面」），这里让内容淡入，
+        /* 系统启动窗口那一帧是纯底色（见 build.sh「去掉开屏画面」），这里让内容淡入，
            而不是「唰」地出现 —— 两段衔接才看不出接缝。260ms 足够，再慢就像卡了一下。 */
         col.setAlpha(0f);
         col.animate().alpha(1f).setDuration(260).start();

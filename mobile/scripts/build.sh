@@ -11,8 +11,13 @@ JAVA_SRC="android/app/src/main/java/com/moread/reader"
 MANIFEST="android/app/src/main/AndroidManifest.xml"
 RES="android/app/src/main/res"
 
-# 纸色，取自 App 正文底色；启动窗口就用它
+# 纸色，取自 App 正文底色
 BRAND_PAPER="#F6F1E7"
+# 开屏底色。必须与 Web 开屏六版里最暗的那一版（launch-splash.css 的 #0B1116）一致：
+# 系统启动窗口 → 原生覆盖层 → Web 开屏是三次交接，前两次若用纸色、第三次是深墨，
+# 中间就有一次整屏由浅翻深 —— 那正是「蒙皮色彩不同步」。
+# 02/03 两版是品牌蓝，靠覆盖层 200ms 淡出过渡（变亮比变暗好接受）。
+BRAND_LAUNCH_BG="#0B1116"
 
 step() { printf '\n\033[1;36m== %s ==\033[0m\n' "$1"; }
 
@@ -58,21 +63,25 @@ node -e '
   console.log("应用名 = " + name + "（覆盖 " + hit + " 处）");
 ' android/app/src/main/res/values/strings.xml
 
-step "去掉开屏画面（只留纸色底）"
+step "去掉开屏画面（只留开屏底色）"
 # 模板的 AppTheme.NoActionBarLaunch 挂的是 @drawable/splash —— Capacitor 标志那 11 张图。
-# 冷启动时这张图要一直挂到 WebView 画出第一帧，壳加载的是线上页面，网一慢就成了「开屏很久」。
-# 换成纯色之后没有 logo 可看，观感是「页面在加载」，而不是「卡在启动图上」。
+# 冷启动时这张图要一直挂到 WebView 画出第一帧，观感是「卡在启动图上」。
+# 换成纯色之后没有 logo 可看，观感是「页面在加载」。
 #
 # 这里只处理「系统启动窗口」那一帧 —— 它是系统画的，应用只能给底色和图标。
 # 从 Activity 起到 Web 首帧之间的空窗由 MainActivity 的开屏覆盖层接住
 # （图标 + 进度 + 一句在做什么；8 秒还没画出来就给「网络有点慢 · 重试」）。
-# 系统那一帧只保留纯纸色：它的图标尺寸是系统定的，和覆盖层里的 84dp 对不上，
+# 系统那一帧只保留纯色：它的图标尺寸是系统定的，和覆盖层里的 84dp 对不上，
 # 硬放进去会「跳」一下；覆盖层里的内容是淡入的，两段之间才看不出接缝。
+#
+# 用 moread_launch_bg（深墨）而不是 moread_paper（纸色）：Web 开屏六版全是深底，
+# 前两层若用浅色，交接那一下是整屏反转。正文纸色仍在别处用，所以两个都留着。
 mkdir -p "$RES/drawable"
 cat > "$RES/values/moread_colors.xml" <<XML
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="moread_paper">$BRAND_PAPER</color>
+    <color name="moread_launch_bg">$BRAND_LAUNCH_BG</color>
 </resources>
 XML
 # Android 12+ 的系统启动屏只读 windowSplashScreen*，光改 android:background 不够；
@@ -92,8 +101,8 @@ node -e '
   if (!/windowSplashScreenAnimatedIcon/.test(s)) {
     s = s.replace(
       /<item name="android:background">@drawable\/splash<\/item>/,
-      "<item name=\"android:background\">@color/moread_paper</item>\n" +
-      "        <item name=\"windowSplashScreenBackground\">@color/moread_paper</item>\n" +
+      "<item name=\"android:background\">@color/moread_launch_bg</item>\n" +
+      "        <item name=\"windowSplashScreenBackground\">@color/moread_launch_bg</item>\n" +
       "        <item name=\"windowSplashScreenAnimatedIcon\">@drawable/moread_blank</item>"
     );
   }
@@ -102,7 +111,7 @@ node -e '
     process.exit(1);
   }
   fs.writeFileSync(p, s);
-  console.log("styles patched：启动窗口 = 纸色底，无 logo");
+  console.log("styles patched：启动窗口 = 开屏底色（深墨），无 logo");
 ' "$RES/values/styles.xml"
 
 # 上面确认过已经没人引用，这 11 张图纯占体积（每个方向一张），删掉
@@ -120,7 +129,7 @@ node -e '
   const styles = fs.readFileSync(path.join(dir, "values/styles.xml"), "utf8");
   if (/@drawable\/splash/.test(styles)) { console.error("styles 还引用着 @drawable/splash"); process.exit(1); }
   if (!/moread_blank/.test(styles)) { console.error("启动屏图标没换成空白图，Android 12+ 会画应用图标"); process.exit(1); }
-  console.log("开屏：模板图已清空，启动窗口为纯纸色");
+  console.log("开屏：模板图已清空，启动窗口为开屏底色（深墨）");
 ' "$RES"
 
 step "注入插件源码"
