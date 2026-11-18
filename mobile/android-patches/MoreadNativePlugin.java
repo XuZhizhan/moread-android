@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
@@ -31,9 +32,12 @@ import com.getcapacitor.annotation.PermissionCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
@@ -280,6 +284,135 @@ public class MoreadNativePlugin extends Plugin {
         if (!path.isEmpty()) {
             File f = new File(path);
             if (f.exists()) f.delete(); // 忽略失败
+        }
+        call.resolve(ok(true, null));
+    }
+
+    // ------------------------------------------------------- 链接磁盘文件（不复制内容）
+
+    /**
+     * 选一个文件、把读权限**持久**记下来，返回它的 content:// 地址。
+     *
+     * 与 pickFile 的区别只有一个：复不复制。
+     *   pickFile → 整个文件搬进 cacheDir，之后按沙盒路径读（.mdx 走这条）
+     *   linkFile → 只记一个 URI，一个字节都不搬（.mdd 动辄 1.2GB，搬不起）
+     *
+     * 持久授权靠 takePersistableUriPermission。不调它，进程一退权限就没了，
+     * 下次打开的表现是「文件明明还在，却读不出来」——用户只会认为是我们坏了。
+     */
+    @PluginMethod
+    public void linkFile(PluginCall call) {
+        String mime = call.getString("mime", "application/octet-stream");
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(mime.indexOf('/') > 0 ? mime : "application/octet-stream");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        startActivityForResult(call, intent, "linkFileResult");
+    }
+
+    @ActivityCallback
+    private void linkFileResult(PluginCall call, ActivityResult result) {
+        if (call == null) return;
+        Intent data = result.getData();
+        if (result.getResultCode() != Activity.RESULT_OK || data == null || data.getData() == null) {
+            call.resolve(ok(false, "cancelled"));
+            return;
+        }
+        Uri uri = data.getData();
+        Context ctx = getContext();
+        try {
+            /* flags 用回执里那一份，不要自己拼：provider 实际给了什么就收什么 */
+            int take = data.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION;
+            ctx.getContentResolver().takePersistableUriPermission(uri, take);
+        } catch (Exception e) {
+            /* 有些 provider 不允许持久化（临时分享、部分云盘）。
+               这里不判失败：本次会话内照样能读，只是重启后失效，
+               真正读不到时由 readAt 返回失败 —— 那里报错，用户才知道该重新链接。 */
+        }
+        JSObject r = new JSObject();
+        r.put("ok", true);
+        r.put("uri", uri.toString());
+        r.put("name", queryName(ctx, uri));
+        r.put("size", querySize(ctx, uri));
+        call.resolve(r);
+    }
+
+    /**
+     * 读一段字节（base64），给 Web 侧的 { size, read(at,len) } 数据源用。
+     *
+     * 每次 open + seek + read，**不缓存 ParcelFileDescriptor**：
+     * 缓存的 fd 在 Activity 重建后会指向已关闭的文件，症状是「用着用着就读不出来」，
+     * 而不是干脆报错。每次开关多花 1~3ms，比这种偶发故障划算得多。
+     */
+    @PluginMethod
+    public void readAt(PluginCall call) {
+        String uriStr = call.getString("uri", "");
+        long offset = call.getLong("offset", 0L);
+        int length = call.getInt("length", 0);
+        if (uriStr.isEmpty() || length <= 0 || offset < 0) {
+            call.resolve(ok(false, "bad-args"));
+            return;
+        }
+        ParcelFileDescriptor pfd = null;
+        try {
+            pfd = getContext().getContentResolver().openFileDescriptor(Uri.parse(uriStr), "r");
+            if (pfd == null) {
+                call.resolve(ok(false, "not-found"));
+                return;
+            }
+            /* 不关 fis：它的 fd 就是 pfd 的 fd，pfd.close() 已经把它关掉。
+               双关会在 finally 里抛 Bad file descriptor，反倒把真结果吞掉。 */
+            FileInputStream in = new FileInputStream(pfd.getFileDescriptor());
+            FileChannel ch = in.getChannel();
+            ch.position(offset);
+            byte[] buf = new byte[length];
+            int got = 0;
+            while (got < length) {
+                int n = ch.read(ByteBuffer.wrap(buf, got, length - got));
+                if (n <= 0) break;
+                got += n;
+            }
+            JSObject r = new JSObject();
+            r.put("ok", true);
+            r.put("data", Base64.encodeToString(buf, 0, got, Base64.NO_WRAP));
+            call.resolve(r);
+        } catch (Exception e) {
+            call.resolve(ok(false, "read-failed"));
+        } finally {
+            if (pfd != null) {
+                try { pfd.close(); } catch (Exception ignored) { }
+            }
+        }
+    }
+
+    /** content:// 没有 File.length()，大小只能从 OpenableColumns 问 */
+    private static long querySize(Context ctx, Uri uri) {
+        try (android.database.Cursor c = ctx.getContentResolver()
+                .query(uri, new String[] { OpenableColumns.SIZE }, null, null, null)) {
+            if (c != null && c.moveToFirst()) {
+                int i = c.getColumnIndex(OpenableColumns.SIZE);
+                if (i >= 0 && !c.isNull(i)) return c.getLong(i);
+            }
+        } catch (Exception ignored) { }
+        return 0;
+    }
+
+    /**
+     * 还掉持久授权。用户取消链接时调一次。
+     *
+     * 不还的后果不是「多记一个没用的地址」：Android 对每个包只给 128 条持久授权，
+     * 用满之后 takePersistableUriPermission 会**静默失败**（不抛、不报），
+     * 表现是「明明选了文件，下次打开就是读不到」，现场根本查不出来。
+     */
+    @PluginMethod
+    public void releaseLink(PluginCall call) {
+        String uriStr = call.getString("uri", "");
+        if (!uriStr.isEmpty()) {
+            try {
+                getContext().getContentResolver().releasePersistableUriPermission(
+                        Uri.parse(uriStr), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (Exception ignored) { }
         }
         call.resolve(ok(true, null));
     }
