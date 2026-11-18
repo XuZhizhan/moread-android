@@ -308,6 +308,17 @@ public class MoreadNativePlugin extends Plugin {
         intent.setType(mime.indexOf('/') > 0 ? mime : "application/octet-stream");
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                 | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        /* 打开时直接从「内部存储」开始，别停在「最近使用」：
+           词典和发音包是几个月前下的文件，从来不在「最近」里，
+           读者一进来看到空列表，会以为这里根本不允许选 .mdd
+           （2026-11-18 用户报的就是「不能选择对应的 mdd 文件」）。
+           EXTRA_INITIAL_URI 是 API 26 起才有的，低版本由系统忽略即可。 */
+        if (Build.VERSION.SDK_INT >= 26) {
+            try {
+                intent.putExtra(android.provider.DocumentsContract.EXTRA_INITIAL_URI,
+                        Uri.parse("content://com.android.externalstorage.documents/root/primary"));
+            } catch (Exception ignored) { }
+        }
         startActivityForResult(call, intent, "linkFileResult");
     }
 
@@ -386,16 +397,33 @@ public class MoreadNativePlugin extends Plugin {
         }
     }
 
-    /** content:// 没有 File.length()，大小只能从 OpenableColumns 问 */
+    /**
+     * content:// 没有 File.length()，大小只能从 OpenableColumns 问。
+     *
+     * 有些 provider（第三方文件管理器、部分云盘）这一列直接给 null。
+     * 那时用 openFileDescriptor 的 getStatSize() 兜一层 —— 拿不到大小等于
+     * 「文件选上了却读不了」：17i 会抛「读不到大小，可能已被移走」，
+     * 而文件明明好好的，读者只会觉得这个功能坏了（2026-11-18 报过的现象之一）。
+     */
     private static long querySize(Context ctx, Uri uri) {
+        long size = 0;
         try (android.database.Cursor c = ctx.getContentResolver()
                 .query(uri, new String[] { OpenableColumns.SIZE }, null, null, null)) {
             if (c != null && c.moveToFirst()) {
                 int i = c.getColumnIndex(OpenableColumns.SIZE);
-                if (i >= 0 && !c.isNull(i)) return c.getLong(i);
+                if (i >= 0 && !c.isNull(i)) size = c.getLong(i);
             }
         } catch (Exception ignored) { }
-        return 0;
+        if (size > 0) return size;
+        ParcelFileDescriptor p = null;
+        try {
+            p = ctx.getContentResolver().openFileDescriptor(uri, "r");
+            if (p != null) size = p.getStatSize();
+        } catch (Exception ignored) {
+        } finally {
+            if (p != null) { try { p.close(); } catch (Exception ignored) { } }
+        }
+        return size > 0 ? size : 0;
     }
 
     /**
