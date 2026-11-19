@@ -140,25 +140,30 @@ Android 与 WebView 也有 File System Access 了，旧表里「手机浏览器�
 **选择器要指定初始目录。** .mdd 是几个月前下的文件，从来不在 SAF 的「最近使用」里。
 不给 `EXTRA_INITIAL_URI` 时读者一进来看到空列表，会以为这里不允许选 .mdd。
 
-### .mdx 的链接：这一版只走 picker，壳内 SAF 还没接（build-40）
+### .mdx 的链接：壳内已接（build-41 起）
 
-build-40 修了一个从上线起就存在的 bug：链接成功后 `meta.mode` 写的是 `'link'`，
-而查词分派只认 `'direct'` → 掉进条目表（链接模式早已清空）→ **整本词典一个字都查不到**，
-界面只说「没收录」。现在 `direct` 与 `link` 都走直读。
-
-链接入口的实际范围，判据是「有没有 picker」，不是「是不是手机」：
+build-40 修了「链接成功后整本查不到」；build-41 把壳内 SAF 那条路补齐 ——
+老 WebView 的手机也能零复制链 `.mdx`，不再取决于 WebView 版本。
 
 | 环境 | 入口 | 机制 |
 |---|---|---|
 | 桌面 Chrome / Edge 86+ | 有 | 文件句柄 |
-| 手机 Chrome 132+ / 三星 29+ | 有 | 同一个 picker |
-| APK + WebView 132+ | 有 | 同一个 picker（这一版之前会被「手机端只能链接语音库」挡住） |
-| APK + 老 WebView | 没有 | 提示用「导入词库」 |
+| 手机 Chrome 132+ / 三星 29+ | 有 | picker |
+| APK（任意 WebView） | 有 | SAF 优先；WebView ≥132 也仍走 SAF（授权条数自己可控） |
 | Safari / Firefox | 没有 | 提示用「导入词库」 |
 
-壳内 SAF 的 `.mdx` 路径**仍未实现**（解析层已就绪，缺三处接线），见 ADR-013。
+实现分三处，**缺一处就是「按钮在但链不了」**：
 
-另外两条行为变化：换另一本词库前会先确认（同名同大小视为重新链接，不问）；
-链接成功后会清掉旧的展开条目（从 CSV/TXT 切过来的情况）。
+1. `app/17h2-dict-link-native.js`：建索引 + 只存源描述（`src`），不存文件内容
+2. `app/17c-dict-01-dict-mode.js`：`dictDirectOpen` 认 `row.src`，打开时包成 `{ size, read }`
+3. `app/17c-dict-02-dict-direct-get.js`：`dictClear` 删库时归还 SAF 授权
 
+**授权按 uri 判断，同一个文件重链不许还**：Android 按 uri 撤销、不区分持有几次，
+先还再拿等于把自己刚拿到的权限撤掉（表现是「链接成功了，下次打开读不到」）。
 
+真机验收（build-41）：
+
+- [ ] 设置里「链接 .mdx」在 APK 里出现（不再只在桌面）
+- [ ] 选一个 .mdx：几秒内出「已链接 / 链接模式，索引 Xs」，**手机存储占用不变**
+- [ ] 查词能出释义 —— 这是 build-40 修的 bug，build-41 要复验一次
+- [ ] 删词库后重新链接：不该提示权限异常（说明旧的还了、新的拿得到）
