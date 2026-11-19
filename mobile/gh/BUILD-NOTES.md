@@ -88,3 +88,77 @@ diff -q <本地路径> /tmp/x && echo OK
 别改成「定时构建」或「手动 dispatch 忽略」：出包是有代价的（7 分钟 + 一个版本号），
 留一个显式的动作，才不会出现「用户装到的包不知道是哪一版前端」。
 判断包里是哪一版看 release notes 的「包内前端」那行，与线上 index.html 引用对一下。
+
+## 七、链接语音库（.mdd）：手机端靠 SAF，只在新包里有效
+
+2026-11-18 起设置页多了一个「链接 .mdd」。按环境分（2026-11-19 更正：Chrome 132 起
+Android 与 WebView 也有 File System Access 了，旧表里「手机浏览器都没有」已不成立）：
+
+| 环境 | 有没有入口 | 机制 |
+|---|---|---|
+| 桌面 Chrome / Edge 86+ | 有 | File System Access 句柄，重启后可能要再授权 |
+| **APK（build-38 起）** | 有 | SAF 持久授权 + `readAt` 按区间读（优先于 picker） |
+| 手机 Chrome 132+ / 三星 29+ | 有 | 同一个 picker |
+| 微信等内置 WebView / 老浏览器 | 没有 | 没有 picker 也没有 SAF，只能导入（抽词头音约 369 MB） |
+
+涉及三处，**缺一处就退回「只能导入」**——不会崩，但按钮不出现：
+
+1. `mobile/android-patches/MoreadNativePlugin.java`：`linkFile` / `readAt` / `releaseLink` / `querySize`
+2. `app/17i-native-source.js`：`canLink` / `linkFile` / `linkedSource`
+3. `app/17g3-mdd-link.js`：`mddLinkImport` 认 `{ kind: 'native' }`
+
+**出包后必须在真机上验这四条**（沙箱里编不了 Java，CI 只保证编译过，不保证能读）：
+
+- [ ] 设置里能看到「链接 .mdd」，点了弹系统文件选择器
+- [ ] 选一个 1 GB 以上的 .mdd，几秒内出「已链接 N 条」；手机存储占用**不变**
+- [ ] 点词能听到真人发音（说明 `readAt` 走通了）
+- [ ] 杀掉 App 再打开，点词还是真人发音（说明持久授权真的记下来了）
+
+第 4 条最容易漏：`takePersistableUriPermission` 没生效时，当场一切正常，
+只有重启后才变成「点了没声音」——那时候已经想不起来是这一步的问题。
+
+另外：取消链接要调 `releaseLink` 把授权还回去。Android 每个包只给 128 条持久授权，
+用满之后 `take` 是**静默失败**（不抛不报），表现就是「明明选了文件，下次打开读不到」。
+
+### 两个只在 Android 上才犯的错（2026-11-18 都踩过）
+
+**accept 不能写扩展名。** `accept=".mdx,.mdd"` 在 WebView 里会交给 Capacitor 的
+`BridgeWebChromeClient.showFilePicker`，它用 `MimeTypeMap.getMimeTypeFromExtension`
+查每个后缀，**查不到的直接丢掉**。.mdx / .mdd 系统根本不认识 → 传下去只剩 text/csv
+那几个 → 选择器里所有文件变灰，一个都点不动，用户看到的就是「选不了文件」。
+现在 accept 写 `*/*`，格式判断挪到 17c-dict-05 的 `dictNameOk`。
+
+**bindDictLink 不能立即调用。** app.js 是**一个 IIFE**，片段按文件名排序，17c 在 17i
+前面。`defer` 脚本执行时 `document.readyState` 已经是 `interactive`，那条
+`readyState === 'loading'` 的分支走不到，`bindDictUi()` 会立刻跑 —— 那一刻
+`window.MoreadNative`（17i 才定义）还不存在，「这台机器能不能链接」永远判成否，
+手机上两个链接按钮一次都不出现。现在让出一拍（`setTimeout(dictBindLink, 0)`）。
+
+**querySize 不能只信 OpenableColumns。** 有些 provider 这一列给 null，拿不到大小
+等于「选上了却读不了」（17i 会抛「读不到大小」）。现在用 `getStatSize()` 兜底。
+
+**选择器要指定初始目录。** .mdd 是几个月前下的文件，从来不在 SAF 的「最近使用」里。
+不给 `EXTRA_INITIAL_URI` 时读者一进来看到空列表，会以为这里不允许选 .mdd。
+
+### .mdx 的链接：这一版只走 picker，壳内 SAF 还没接（build-40）
+
+build-40 修了一个从上线起就存在的 bug：链接成功后 `meta.mode` 写的是 `'link'`，
+而查词分派只认 `'direct'` → 掉进条目表（链接模式早已清空）→ **整本词典一个字都查不到**，
+界面只说「没收录」。现在 `direct` 与 `link` 都走直读。
+
+链接入口的实际范围，判据是「有没有 picker」，不是「是不是手机」：
+
+| 环境 | 入口 | 机制 |
+|---|---|---|
+| 桌面 Chrome / Edge 86+ | 有 | 文件句柄 |
+| 手机 Chrome 132+ / 三星 29+ | 有 | 同一个 picker |
+| APK + WebView 132+ | 有 | 同一个 picker（这一版之前会被「手机端只能链接语音库」挡住） |
+| APK + 老 WebView | 没有 | 提示用「导入词库」 |
+| Safari / Firefox | 没有 | 提示用「导入词库」 |
+
+壳内 SAF 的 `.mdx` 路径**仍未实现**（解析层已就绪，缺三处接线），见 ADR-013。
+
+另外两条行为变化：换另一本词库前会先确认（同名同大小视为重新链接，不问）；
+链接成功后会清掉旧的展开条目（从 CSV/TXT 切过来的情况）。
+
+
