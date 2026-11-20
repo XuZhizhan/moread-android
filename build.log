@@ -1,0 +1,1269 @@
+
+[1;36m== 安装依赖 ==[0m
+
+added 98 packages, and audited 99 packages in 3s
+
+11 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+[1;36m== 生成 android 平台 ==[0m
+✔ Adding native android project in android in 21.58ms
+✔ add in 22.04ms
+✔ Copying web assets from dist to android/app/src/main/assets/public in 5.89ms
+✔ Creating capacitor.config.json in android/app/src/main/assets in 264.88μs
+✔ copy android in 8.40ms
+✔ Updating Android plugins in 207.94μs
+✔ update android in 6.24ms
+✔ Syncing Gradle in 107.50μs
+[success] android platform added!
+Follow the Developer Workflow guide to get building:
+https://capacitorjs.com/docs/basics/workflow
+
+[1;36m== 应用图标（源：android-patches/moread_icon.svg） ==[0m
+图标：22 个文件，底色 #2E9BFF，前景收进 72.0%
+
+[1;36m== 应用名（只改显示名，不动身份） ==[0m
+应用名 = 悦读星球（覆盖 2 处）
+
+[1;36m== 开屏：只留开屏底色 ==[0m
+styles patched：启动窗口 = 开屏底色（深墨），无 logo
+
+[1;36m== 校验（没有残留的启动图） ==[0m
+开屏：模板图已清空，启动窗口为开屏底色（深墨）
+
+[1;36m== 注入插件源码 ==[0m
+
+[1;36m== 补 AndroidManifest（通知权限 + 提醒接收者 + 接管返回键） ==[0m
+manifest patched
+
+[1;36m== sync（把 dist 与插件写进 android 工程） ==[0m
+✔ Copying web assets from dist to android/app/src/main/assets/public in 6.88ms
+✔ Creating capacitor.config.json in android/app/src/main/assets in 448.21μs
+✔ copy android in 10.75ms
+✔ Updating Android plugins in 264.15μs
+✔ update android in 10.56ms
+[info] Sync finished in 0.03s
+
+[1;36m== 固定 debug 签名（后续包可覆盖升级，不必卸载） ==[0m
+签名配置已注入 android/app/build.gradle
+debug 签名指纹 SHA1：E1:5E:66:35:86:1C:5F:43:E1:A2:74:66:66:73:DF:F1:9D:02:96:EB
+== setup 完成 ==
+Downloading https://services.gradle.org/distributions/gradle-8.14.3-all.zip
+.....................10%.....................20%......................30%.....................40%......................50%.....................60%.....................70%......................80%.....................90%......................100%
+
+Welcome to Gradle 8.14.3!
+
+Here are the highlights of this release:
+ - Java 24 support
+ - GraalVM Native Image toolchain selection
+ - Enhancements to test reporting
+ - Build Authoring improvements
+
+For more details see https://docs.gradle.org/8.14.3/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+A problem occurred configuring root project 'android'.
+> Could not resolve all artifacts for configuration 'classpath'.
+   > Could not find org.jetbrains.kotlin:kotlin-stdlib:2.2.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.2.0/kotlin-stdlib-2.2.0.pom
+       - https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.2.0/kotlin-stdlib-2.2.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:gradle-settings-api:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:aaptcompiler:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder-model:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:gradle-api:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:gradle-settings-api:8.13.0 > com.android.tools.build:gradle-common-api:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.build:manifest-merger:31.13.0
+   > Could not find org.apache.httpcomponents:httpmime:4.5.6.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/apache/httpcomponents/httpmime/4.5.6/httpmime-4.5.6.pom
+       - https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpmime/4.5.6/httpmime-4.5.6.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdklib:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:crash:31.13.0
+   > Could not find commons-io:commons-io:2.16.1.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/commons-io/commons-io/2.16.1/commons-io-2.16.1.pom
+       - https://repo.maven.apache.org/maven2/commons-io/commons-io/2.16.1/commons-io-2.16.1.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > androidx.databinding:databinding-compiler-common:8.13.0
+   > Could not find org.ow2.asm:asm:9.8.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/ow2/asm/asm/9.8/asm-9.8.pom
+       - https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.8/asm-9.8.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.lint:lint-typedef-remover:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:gradle-api:8.13.0
+   > Could not find org.ow2.asm:asm-analysis:9.8.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/ow2/asm/asm-analysis/9.8/asm-analysis-9.8.pom
+       - https://repo.maven.apache.org/maven2/org/ow2/asm/asm-analysis/9.8/asm-analysis-9.8.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+   > Could not find org.ow2.asm:asm-commons:9.8.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/ow2/asm/asm-commons/9.8/asm-commons-9.8.pom
+       - https://repo.maven.apache.org/maven2/org/ow2/asm/asm-commons/9.8/asm-commons-9.8.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0
+   > Could not find org.ow2.asm:asm-util:9.8.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/ow2/asm/asm-util/9.8/asm-util-9.8.pom
+       - https://repo.maven.apache.org/maven2/org/ow2/asm/asm-util/9.8/asm-util-9.8.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+   > Could not find org.bouncycastle:bcpkix-jdk18on:1.79.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/bouncycastle/bcpkix-jdk18on/1.79/bcpkix-jdk18on-1.79.pom
+       - https://repo.maven.apache.org/maven2/org/bouncycastle/bcpkix-jdk18on/1.79/bcpkix-jdk18on-1.79.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.build:apkzlib:8.13.0
+   > Could not find org.glassfish.jaxb:jaxb-runtime:2.3.2.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/glassfish/jaxb/jaxb-runtime/2.3.2/jaxb-runtime-2.3.2.pom
+       - https://repo.maven.apache.org/maven2/org/glassfish/jaxb/jaxb-runtime/2.3.2/jaxb-runtime-2.3.2.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdklib:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:repository:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > androidx.databinding:databinding-compiler-common:8.13.0
+   > Could not find net.sf.jopt-simple:jopt-simple:4.9.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/net/sf/jopt-simple/jopt-simple/4.9/jopt-simple-4.9.pom
+       - https://repo.maven.apache.org/maven2/net/sf/jopt-simple/jopt-simple/4.9/jopt-simple-4.9.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+   > Could not find com.squareup:javapoet:1.10.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/squareup/javapoet/1.10.0/javapoet-1.10.0.pom
+       - https://repo.maven.apache.org/maven2/com/squareup/javapoet/1.10.0/javapoet-1.10.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > androidx.databinding:databinding-compiler-common:8.13.0
+   > Could not find com.google.protobuf:protobuf-java:3.25.5.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/protobuf/protobuf-java/3.25.5/protobuf-java-3.25.5.pom
+       - https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.25.5/protobuf-java-3.25.5.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.ddms:ddmlib:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:aapt2-proto:8.13.0-13719691
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:aaptcompiler:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-device-provider-ddmlib-proto:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-device-provider-profile-proto:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-host-additional-test-output-proto:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-host-coverage-proto:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-host-emulator-control-proto:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-host-logcat-proto:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-host-apk-installer-proto:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:shared:31.13.0 > com.android.tools.analytics-library:protos:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.analytics-library:tracker:31.13.0
+   > Could not find com.google.protobuf:protobuf-java-util:3.25.5.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/protobuf/protobuf-java-util/3.25.5/protobuf-java-util-3.25.5.pom
+       - https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java-util/3.25.5/protobuf-java-util-3.25.5.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+   > Could not find com.google.code.gson:gson:2.11.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.pom
+       - https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdklib:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:shared:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > androidx.databinding:databinding-compiler-common:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.build:manifest-merger:31.13.0
+   > Could not find io.grpc:grpc-core:1.69.1.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/io/grpc/grpc-core/1.69.1/grpc-core-1.69.1.pom
+       - https://repo.maven.apache.org/maven2/io/grpc/grpc-core/1.69.1/grpc-core-1.69.1.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+   > Could not find io.grpc:grpc-netty:1.69.1.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/io/grpc/grpc-netty/1.69.1/grpc-netty-1.69.1.pom
+       - https://repo.maven.apache.org/maven2/io/grpc/grpc-netty/1.69.1/grpc-netty-1.69.1.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+   > Could not find io.grpc:grpc-protobuf:1.69.1.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/io/grpc/grpc-protobuf/1.69.1/grpc-protobuf-1.69.1.pom
+       - https://repo.maven.apache.org/maven2/io/grpc/grpc-protobuf/1.69.1/grpc-protobuf-1.69.1.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+   > Could not find io.grpc:grpc-stub:1.69.1.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/io/grpc/grpc-stub/1.69.1/grpc-stub-1.69.1.pom
+       - https://repo.maven.apache.org/maven2/io/grpc/grpc-stub/1.69.1/grpc-stub-1.69.1.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+   > Could not find io.grpc:grpc-inprocess:1.69.1.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/io/grpc/grpc-inprocess/1.69.1/grpc-inprocess-1.69.1.pom
+       - https://repo.maven.apache.org/maven2/io/grpc/grpc-inprocess/1.69.1/grpc-inprocess-1.69.1.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+   > Could not find com.google.crypto.tink:tink:1.7.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/crypto/tink/tink/1.7.0/tink-1.7.0.pom
+       - https://repo.maven.apache.org/maven2/com/google/crypto/tink/tink/1.7.0/tink-1.7.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+   > Could not find com.google.flatbuffers:flatbuffers-java:1.12.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/flatbuffers/flatbuffers-java/1.12.0/flatbuffers-java-1.12.0.pom
+       - https://repo.maven.apache.org/maven2/com/google/flatbuffers/flatbuffers-java/1.12.0/flatbuffers-java-1.12.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+   > Could not find org.tensorflow:tensorflow-lite-metadata:0.2.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/tensorflow/tensorflow-lite-metadata/0.2.0/tensorflow-lite-metadata-0.2.0.pom
+       - https://repo.maven.apache.org/maven2/org/tensorflow/tensorflow-lite-metadata/0.2.0/tensorflow-lite-metadata-0.2.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0
+   > Could not find com.google.code.gson:gson:2.11.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.pom
+       - https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.pom
+     Required by:
+         root project : > com.google.gms:google-services:4.4.4
+   > Could not find org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.2.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/2.2.0/kotlin-stdlib-jdk8-2.2.0.pom
+       - https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/2.2.0/kotlin-stdlib-jdk8-2.2.0.pom
+     Required by:
+         root project : > com.google.gms:google-services:4.4.4
+   > Could not find com.google.guava:guava:33.3.1-jre.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.pom
+       - https://repo.maven.apache.org/maven2/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:aaptcompiler:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:crash:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:shared:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.lint:lint-typedef-remover:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > androidx.databinding:databinding-compiler-common:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder-test-api:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:gradle-api:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0 > com.android.tools:common:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.analytics-library:tracker:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.build:apkzlib:8.13.0
+   > Could not find javax.inject:javax.inject:1.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/javax/inject/javax.inject/1/javax.inject-1.pom
+       - https://repo.maven.apache.org/maven2/javax/inject/javax.inject/1/javax.inject-1.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0
+   > Could not find net.sf.kxml:kxml2:2.3.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/net/sf/kxml/kxml2/2.3.0/kxml2-2.3.0.pom
+       - https://repo.maven.apache.org/maven2/net/sf/kxml/kxml2/2.3.0/kxml2-2.3.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.ddms:ddmlib:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.lint:lint-model:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.layoutlib:layoutlib-api:31.13.0
+   > Could not find org.apache.commons:commons-compress:1.21.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/apache/commons/commons-compress/1.21/commons-compress-1.21.pom
+       - https://repo.maven.apache.org/maven2/org/apache/commons/commons-compress/1.21/commons-compress-1.21.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdklib:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:repository:31.13.0
+   > Could not find org.bouncycastle:bcprov-jdk18on:1.79.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/bouncycastle/bcprov-jdk18on/1.79/bcprov-jdk18on-1.79.pom
+       - https://repo.maven.apache.org/maven2/org/bouncycastle/bcprov-jdk18on/1.79/bcprov-jdk18on-1.79.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.build:apkzlib:8.13.0
+   > Could not find org.jetbrains.kotlin:kotlin-reflect:2.2.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/jetbrains/kotlin/kotlin-reflect/2.2.0/kotlin-reflect-2.2.0.pom
+       - https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/2.2.0/kotlin-reflect-2.2.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+   > Could not find org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.2.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/2.2.0/kotlin-stdlib-jdk8-2.2.0.pom
+       - https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/2.2.0/kotlin-stdlib-jdk8-2.2.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:repository:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:shared:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.lint:lint-model:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > androidx.databinding:databinding-compiler-common:8.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-host-emulator-control-proto:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0 > com.android.tools:common:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.analytics-library:tracker:31.13.0
+   > Could not find org.apache.httpcomponents:httpcore:4.4.16.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/apache/httpcomponents/httpcore/4.4.16/httpcore-4.4.16.pom
+       - https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpcore/4.4.16/httpcore-4.4.16.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdklib:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:crash:31.13.0
+   > Could not find com.google.jimfs:jimfs:1.1.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/jimfs/jimfs/1.1/jimfs-1.1.pom
+       - https://repo.maven.apache.org/maven2/com/google/jimfs/jimfs/1.1/jimfs-1.1.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:repository:31.13.0
+   > Could not find com.sun.activation:javax.activation:1.2.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/sun/activation/javax.activation/1.2.0/javax.activation-1.2.0.pom
+       - https://repo.maven.apache.org/maven2/com/sun/activation/javax.activation/1.2.0/javax.activation-1.2.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:repository:31.13.0
+   > Could not find org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core/1.9.0/kotlinx-coroutines-core-1.9.0.pom
+       - https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core/1.9.0/kotlinx-coroutines-core-1.9.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:repository:31.13.0
+   > Could not find org.jetbrains:annotations:23.0.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/jetbrains/annotations/23.0.0/annotations-23.0.0.pom
+       - https://repo.maven.apache.org/maven2/org/jetbrains/annotations/23.0.0/annotations-23.0.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.ddms:ddmlib:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.layoutlib:layoutlib-api:31.13.0
+   > Could not find org.apache.httpcomponents:httpclient:4.5.14.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/apache/httpcomponents/httpclient/4.5.14/httpclient-4.5.14.pom
+       - https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.5.14/httpclient-4.5.14.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:crash:31.13.0
+   > Could not find net.java.dev.jna:jna-platform:5.6.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/net/java/dev/jna/jna-platform/5.6.0/jna-platform-5.6.0.pom
+       - https://repo.maven.apache.org/maven2/net/java/dev/jna/jna-platform/5.6.0/jna-platform-5.6.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:shared:31.13.0
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0 > com.android.tools:common:31.13.0
+   > Could not find com.googlecode.juniversalchardet:juniversalchardet:1.0.3.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/googlecode/juniversalchardet/juniversalchardet/1.0.3/juniversalchardet-1.0.3.pom
+       - https://repo.maven.apache.org/maven2/com/googlecode/juniversalchardet/juniversalchardet/1.0.3/juniversalchardet-1.0.3.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > androidx.databinding:databinding-compiler-common:8.13.0
+   > Could not find javax.annotation:javax.annotation-api:1.3.2.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.pom
+       - https://repo.maven.apache.org/maven2/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+   > Could not find com.google.auto.value:auto-value-annotations:1.6.2.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/auto/value/auto-value-annotations/1.6.2/auto-value-annotations-1.6.2.pom
+       - https://repo.maven.apache.org/maven2/com/google/auto/value/auto-value-annotations/1.6.2/auto-value-annotations-1.6.2.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+   > Could not find com.google.errorprone:error_prone_annotations:2.3.1.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/errorprone/error_prone_annotations/2.3.1/error_prone_annotations-2.3.1.pom
+       - https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.3.1/error_prone_annotations-2.3.1.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+   > Could not find com.google.guava:guava:33.3.1-jre.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.pom
+       - https://repo.maven.apache.org/maven2/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+   > Could not find com.google.protobuf:protobuf-java:3.25.5.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/protobuf/protobuf-java/3.25.5/protobuf-java-3.25.5.pom
+       - https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.25.5/protobuf-java-3.25.5.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+   > Could not find com.google.protobuf:protobuf-java-util:3.25.5.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/protobuf/protobuf-java-util/3.25.5/protobuf-java-util-3.25.5.pom
+       - https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java-util/3.25.5/protobuf-java-util-3.25.5.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+   > Could not find com.google.dagger:dagger:2.28.3.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/dagger/dagger/2.28.3/dagger-2.28.3.pom
+       - https://repo.maven.apache.org/maven2/com/google/dagger/dagger/2.28.3/dagger-2.28.3.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+   > Could not find org.bitbucket.b_c:jose4j:0.9.5.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/bitbucket/b_c/jose4j/0.9.5/jose4j-0.9.5.pom
+       - https://repo.maven.apache.org/maven2/org/bitbucket/b_c/jose4j/0.9.5/jose4j-0.9.5.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+   > Could not find org.slf4j:slf4j-api:1.7.30.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.pom
+       - https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+   > Could not find com.google.code.gson:gson:2.11.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.pom
+       - https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build.jetifier:jetifier-core:1.0.0-beta10
+   > Could not find org.jetbrains.kotlin:kotlin-stdlib:2.2.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.2.0/kotlin-stdlib-2.2.0.pom
+       - https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.2.0/kotlin-stdlib-2.2.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build.jetifier:jetifier-core:1.0.0-beta10
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build.jetifier:jetifier-processor:1.0.0-beta10
+   > Could not find org.ow2.asm:asm:9.8.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/ow2/asm/asm/9.8/asm-9.8.pom
+       - https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.8/asm-9.8.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build.jetifier:jetifier-processor:1.0.0-beta10
+   > Could not find org.ow2.asm:asm-util:9.8.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/ow2/asm/asm-util/9.8/asm-util-9.8.pom
+       - https://repo.maven.apache.org/maven2/org/ow2/asm/asm-util/9.8/asm-util-9.8.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build.jetifier:jetifier-processor:1.0.0-beta10
+   > Could not find org.ow2.asm:asm-commons:9.8.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/ow2/asm/asm-commons/9.8/asm-commons-9.8.pom
+       - https://repo.maven.apache.org/maven2/org/ow2/asm/asm-commons/9.8/asm-commons-9.8.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build.jetifier:jetifier-processor:1.0.0-beta10
+   > Could not find org.jdom:jdom2:2.0.6.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/jdom/jdom2/2.0.6/jdom2-2.0.6.pom
+       - https://repo.maven.apache.org/maven2/org/jdom/jdom2/2.0.6/jdom2-2.0.6.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build.jetifier:jetifier-processor:1.0.0-beta10
+   > Could not find com.google.protobuf:protobuf-java:3.25.5.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/protobuf/protobuf-java/3.25.5/protobuf-java-3.25.5.pom
+       - https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.25.5/protobuf-java-3.25.5.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.google.testing.platform:core-proto:0.0.9-alpha03
+   > Could not find com.squareup:javawriter:2.5.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/squareup/javawriter/2.5.0/javawriter-2.5.0.pom
+       - https://repo.maven.apache.org/maven2/com/squareup/javawriter/2.5.0/javawriter-2.5.0.pom
+     Required by:
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0
+   > Could not find com.google.code.findbugs:jsr305:3.0.2.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.pom
+       - https://repo.maven.apache.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.pom
+     Required by:
+         root project : > com.google.gms:google-services:4.4.4 > com.google.android.gms:strict-version-matcher-plugin:1.2.4
+         root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.build:apkzlib:8.13.0
+   > Could not find com.google.guava:guava:33.3.1-jre.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.pom
+       - https://repo.maven.apache.org/maven2/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.pom
+     Required by:
+         root project : > com.google.gms:google-services:4.4.4 > com.google.android.gms:strict-version-matcher-plugin:1.2.4
+   > Could not find org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.2.0.
+     Searched in the following locations:
+       - https://dl.google.com/dl/android/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/2.2.0/kotlin-stdlib-jdk8-2.2.0.pom
+       - https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/2.2.0/kotlin-stdlib-jdk8-2.2.0.pom
+     Required by:
+         root project : > com.google.gms:google-services:4.4.4 > com.google.android.gms:strict-version-matcher-plugin:1.2.4
+
+* Try:
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+* Exception is:
+org.gradle.api.ProjectConfigurationException: A problem occurred configuring root project 'android'.
+	at org.gradle.configuration.project.LifecycleProjectEvaluator.wrapException(LifecycleProjectEvaluator.java:84)
+	at org.gradle.configuration.project.LifecycleProjectEvaluator.addConfigurationFailure(LifecycleProjectEvaluator.java:77)
+	at org.gradle.configuration.project.LifecycleProjectEvaluator.access$500(LifecycleProjectEvaluator.java:55)
+	at org.gradle.configuration.project.LifecycleProjectEvaluator$EvaluateProject.lambda$run$0(LifecycleProjectEvaluator.java:111)
+	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.lambda$applyToMutableState$1(DefaultProjectStateRegistry.java:435)
+	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.lambda$fromMutableState$2(DefaultProjectStateRegistry.java:458)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withReplacedLocks(DefaultWorkerLeaseService.java:359)
+	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.fromMutableState(DefaultProjectStateRegistry.java:458)
+	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.applyToMutableState(DefaultProjectStateRegistry.java:434)
+	at org.gradle.configuration.project.LifecycleProjectEvaluator$EvaluateProject.run(LifecycleProjectEvaluator.java:100)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:30)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:27)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:48)
+	at org.gradle.configuration.project.LifecycleProjectEvaluator.evaluate(LifecycleProjectEvaluator.java:72)
+	at org.gradle.api.internal.project.DefaultProject.evaluateUnchecked(DefaultProject.java:827)
+	at org.gradle.api.internal.project.ProjectLifecycleController.lambda$ensureSelfConfigured$2(ProjectLifecycleController.java:88)
+	at org.gradle.internal.model.StateTransitionController.lambda$doTransition$14(StateTransitionController.java:255)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:266)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:254)
+	at org.gradle.internal.model.StateTransitionController.lambda$maybeTransitionIfNotCurrentlyTransitioning$10(StateTransitionController.java:199)
+	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:36)
+	at org.gradle.internal.model.StateTransitionController.maybeTransitionIfNotCurrentlyTransitioning(StateTransitionController.java:195)
+	at org.gradle.api.internal.project.ProjectLifecycleController.ensureSelfConfigured(ProjectLifecycleController.java:88)
+	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.ensureConfigured(DefaultProjectStateRegistry.java:400)
+	at org.gradle.execution.TaskPathProjectEvaluator.configure(TaskPathProjectEvaluator.java:70)
+	at org.gradle.execution.TaskPathProjectEvaluator.configureHierarchy(TaskPathProjectEvaluator.java:84)
+	at org.gradle.configuration.DefaultProjectsPreparer.prepareProjects(DefaultProjectsPreparer.java:50)
+	at org.gradle.configuration.BuildTreePreparingProjectsPreparer.prepareProjects(BuildTreePreparingProjectsPreparer.java:65)
+	at org.gradle.configuration.BuildOperationFiringProjectsPreparer$ConfigureBuild.run(BuildOperationFiringProjectsPreparer.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:30)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:27)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:48)
+	at org.gradle.configuration.BuildOperationFiringProjectsPreparer.prepareProjects(BuildOperationFiringProjectsPreparer.java:40)
+	at org.gradle.initialization.VintageBuildModelController.lambda$prepareProjects$2(VintageBuildModelController.java:84)
+	at org.gradle.internal.model.StateTransitionController.lambda$doTransition$14(StateTransitionController.java:255)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:266)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:254)
+	at org.gradle.internal.model.StateTransitionController.lambda$transitionIfNotPreviously$11(StateTransitionController.java:213)
+	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:36)
+	at org.gradle.internal.model.StateTransitionController.transitionIfNotPreviously(StateTransitionController.java:209)
+	at org.gradle.initialization.VintageBuildModelController.prepareProjects(VintageBuildModelController.java:84)
+	at org.gradle.initialization.VintageBuildModelController.prepareToScheduleTasks(VintageBuildModelController.java:71)
+	at org.gradle.internal.build.DefaultBuildLifecycleController.lambda$prepareToScheduleTasks$6(DefaultBuildLifecycleController.java:175)
+	at org.gradle.internal.model.StateTransitionController.lambda$doTransition$14(StateTransitionController.java:255)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:266)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:254)
+	at org.gradle.internal.model.StateTransitionController.lambda$maybeTransition$9(StateTransitionController.java:190)
+	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:36)
+	at org.gradle.internal.model.StateTransitionController.maybeTransition(StateTransitionController.java:186)
+	at org.gradle.internal.build.DefaultBuildLifecycleController.prepareToScheduleTasks(DefaultBuildLifecycleController.java:173)
+	at org.gradle.internal.buildtree.DefaultBuildTreeWorkPreparer.scheduleRequestedTasks(DefaultBuildTreeWorkPreparer.java:36)
+	at org.gradle.internal.cc.impl.VintageBuildTreeWorkController$scheduleAndRunRequestedTasks$1.apply(VintageBuildTreeWorkController.kt:36)
+	at org.gradle.internal.cc.impl.VintageBuildTreeWorkController$scheduleAndRunRequestedTasks$1.apply(VintageBuildTreeWorkController.kt:35)
+	at org.gradle.composite.internal.DefaultIncludedBuildTaskGraph.withNewWorkGraph(DefaultIncludedBuildTaskGraph.java:112)
+	at org.gradle.internal.cc.impl.VintageBuildTreeWorkController.scheduleAndRunRequestedTasks(VintageBuildTreeWorkController.kt:35)
+	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.lambda$scheduleAndRunTasks$1(DefaultBuildTreeLifecycleController.java:77)
+	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.lambda$runBuild$4(DefaultBuildTreeLifecycleController.java:120)
+	at org.gradle.internal.model.StateTransitionController.lambda$transition$6(StateTransitionController.java:169)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:266)
+	at org.gradle.internal.model.StateTransitionController.lambda$transition$7(StateTransitionController.java:169)
+	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:46)
+	at org.gradle.internal.model.StateTransitionController.transition(StateTransitionController.java:169)
+	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.runBuild(DefaultBuildTreeLifecycleController.java:117)
+	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.scheduleAndRunTasks(DefaultBuildTreeLifecycleController.java:77)
+	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.scheduleAndRunTasks(DefaultBuildTreeLifecycleController.java:72)
+	at org.gradle.tooling.internal.provider.ExecuteBuildActionRunner.run(ExecuteBuildActionRunner.java:31)
+	at org.gradle.launcher.exec.ChainingBuildActionRunner.run(ChainingBuildActionRunner.java:35)
+	at org.gradle.internal.buildtree.ProblemReportingBuildActionRunner.run(ProblemReportingBuildActionRunner.java:49)
+	at org.gradle.launcher.exec.BuildOutcomeReportingBuildActionRunner.run(BuildOutcomeReportingBuildActionRunner.java:71)
+	at org.gradle.tooling.internal.provider.FileSystemWatchingBuildActionRunner.run(FileSystemWatchingBuildActionRunner.java:135)
+	at org.gradle.launcher.exec.BuildCompletionNotifyingBuildActionRunner.run(BuildCompletionNotifyingBuildActionRunner.java:41)
+	at org.gradle.launcher.exec.RootBuildLifecycleBuildActionExecutor.lambda$execute$0(RootBuildLifecycleBuildActionExecutor.java:54)
+	at org.gradle.composite.internal.DefaultRootBuildState.run(DefaultRootBuildState.java:130)
+	at org.gradle.launcher.exec.RootBuildLifecycleBuildActionExecutor.execute(RootBuildLifecycleBuildActionExecutor.java:54)
+	at org.gradle.internal.buildtree.InitDeprecationLoggingActionExecutor.execute(InitDeprecationLoggingActionExecutor.java:62)
+	at org.gradle.internal.buildtree.InitProblems.execute(InitProblems.java:36)
+	at org.gradle.internal.buildtree.DefaultBuildTreeContext.execute(DefaultBuildTreeContext.java:40)
+	at org.gradle.launcher.exec.BuildTreeLifecycleBuildActionExecutor.lambda$execute$0(BuildTreeLifecycleBuildActionExecutor.java:71)
+	at org.gradle.internal.buildtree.BuildTreeState.run(BuildTreeState.java:60)
+	at org.gradle.launcher.exec.BuildTreeLifecycleBuildActionExecutor.execute(BuildTreeLifecycleBuildActionExecutor.java:71)
+	at org.gradle.launcher.exec.RunAsBuildOperationBuildActionExecutor$2.call(RunAsBuildOperationBuildActionExecutor.java:67)
+	at org.gradle.launcher.exec.RunAsBuildOperationBuildActionExecutor$2.call(RunAsBuildOperationBuildActionExecutor.java:63)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.launcher.exec.RunAsBuildOperationBuildActionExecutor.execute(RunAsBuildOperationBuildActionExecutor.java:63)
+	at org.gradle.launcher.exec.RunAsWorkerThreadBuildActionExecutor.lambda$execute$0(RunAsWorkerThreadBuildActionExecutor.java:36)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:263)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:127)
+	at org.gradle.launcher.exec.RunAsWorkerThreadBuildActionExecutor.execute(RunAsWorkerThreadBuildActionExecutor.java:36)
+	at org.gradle.tooling.internal.provider.continuous.ContinuousBuildActionExecutor.execute(ContinuousBuildActionExecutor.java:110)
+	at org.gradle.tooling.internal.provider.SubscribableBuildActionExecutor.execute(SubscribableBuildActionExecutor.java:64)
+	at org.gradle.internal.session.DefaultBuildSessionContext.execute(DefaultBuildSessionContext.java:46)
+	at org.gradle.internal.buildprocess.execution.BuildSessionLifecycleBuildActionExecutor$ActionImpl.apply(BuildSessionLifecycleBuildActionExecutor.java:92)
+	at org.gradle.internal.buildprocess.execution.BuildSessionLifecycleBuildActionExecutor$ActionImpl.apply(BuildSessionLifecycleBuildActionExecutor.java:80)
+	at org.gradle.internal.session.BuildSessionState.run(BuildSessionState.java:73)
+	at org.gradle.internal.buildprocess.execution.BuildSessionLifecycleBuildActionExecutor.execute(BuildSessionLifecycleBuildActionExecutor.java:62)
+	at org.gradle.internal.buildprocess.execution.BuildSessionLifecycleBuildActionExecutor.execute(BuildSessionLifecycleBuildActionExecutor.java:41)
+	at org.gradle.internal.buildprocess.execution.StartParamsValidatingActionExecutor.execute(StartParamsValidatingActionExecutor.java:64)
+	at org.gradle.internal.buildprocess.execution.StartParamsValidatingActionExecutor.execute(StartParamsValidatingActionExecutor.java:32)
+	at org.gradle.internal.buildprocess.execution.SessionFailureReportingActionExecutor.execute(SessionFailureReportingActionExecutor.java:51)
+	at org.gradle.internal.buildprocess.execution.SessionFailureReportingActionExecutor.execute(SessionFailureReportingActionExecutor.java:39)
+	at org.gradle.internal.buildprocess.execution.SetupLoggingActionExecutor.execute(SetupLoggingActionExecutor.java:47)
+	at org.gradle.internal.buildprocess.execution.SetupLoggingActionExecutor.execute(SetupLoggingActionExecutor.java:31)
+	at org.gradle.launcher.daemon.server.exec.ExecuteBuild.doBuild(ExecuteBuild.java:70)
+	at org.gradle.launcher.daemon.server.exec.BuildCommandOnly.execute(BuildCommandOnly.java:37)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.WatchForDisconnection.execute(WatchForDisconnection.java:39)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.ResetDeprecationLogger.execute(ResetDeprecationLogger.java:29)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.RequestStopIfSingleUsedDaemon.execute(RequestStopIfSingleUsedDaemon.java:35)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.ForwardClientInput.lambda$execute$0(ForwardClientInput.java:40)
+	at org.gradle.internal.daemon.clientinput.ClientInputForwarder.forwardInput(ClientInputForwarder.java:80)
+	at org.gradle.launcher.daemon.server.exec.ForwardClientInput.execute(ForwardClientInput.java:37)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.LogAndCheckHealth.execute(LogAndCheckHealth.java:53)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.LogToClient.doBuild(LogToClient.java:63)
+	at org.gradle.launcher.daemon.server.exec.BuildCommandOnly.execute(BuildCommandOnly.java:37)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.EstablishBuildEnvironment.doBuild(EstablishBuildEnvironment.java:84)
+	at org.gradle.launcher.daemon.server.exec.BuildCommandOnly.execute(BuildCommandOnly.java:37)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.StartBuildOrRespondWithBusy$1.run(StartBuildOrRespondWithBusy.java:52)
+	at org.gradle.launcher.daemon.server.DaemonStateCoordinator.lambda$runCommand$0(DaemonStateCoordinator.java:321)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48)
+Caused by: org.gradle.api.internal.artifacts.ivyservice.TypedResolveException: Could not resolve all artifacts for configuration 'classpath'.
+	at org.gradle.api.internal.artifacts.ResolveExceptionMapper.mapFailures(ResolveExceptionMapper.java:61)
+	at org.gradle.api.internal.artifacts.configurations.DefaultConfiguration$DefaultResolutionHost.consolidateFailures(DefaultConfiguration.java:1931)
+	at org.gradle.api.internal.artifacts.configurations.ResolutionHost.rethrowFailuresAndReportProblems(ResolutionHost.java:75)
+	at org.gradle.api.internal.artifacts.configurations.DefaultArtifactCollection.lambda$new$0(DefaultArtifactCollection.java:53)
+	at org.gradle.internal.model.CalculatedValueContainerFactory$SupplierBackedCalculator.calculateValue(CalculatedValueContainerFactory.java:69)
+	at org.gradle.internal.model.CalculatedValueContainer$CalculationState.lambda$attachValue$0(CalculatedValueContainer.java:229)
+	at org.gradle.internal.Try.ofFailable(Try.java:50)
+	at org.gradle.internal.model.CalculatedValueContainer$CalculationState.attachValue(CalculatedValueContainer.java:224)
+	at org.gradle.internal.model.CalculatedValueContainer.finalizeIfNotAlready(CalculatedValueContainer.java:195)
+	at org.gradle.internal.model.CalculatedValueContainer.finalizeIfNotAlready(CalculatedValueContainer.java:186)
+	at org.gradle.api.internal.artifacts.configurations.DefaultArtifactCollection.ensureResolved(DefaultArtifactCollection.java:104)
+	at org.gradle.api.internal.artifacts.configurations.DefaultArtifactCollection.getArtifacts(DefaultArtifactCollection.java:76)
+	at org.gradle.api.internal.initialization.transform.utils.InstrumentationClasspathMerger.mergeToClasspath(InstrumentationClasspathMerger.java:52)
+	at org.gradle.api.internal.initialization.DefaultScriptClassPathResolver.resolveClassPath(DefaultScriptClassPathResolver.java:155)
+	at org.gradle.api.internal.initialization.DefaultBuildLogicBuilder.lambda$resolveClassPath$0(DefaultBuildLogicBuilder.java:64)
+	at org.gradle.api.internal.initialization.DefaultBuildLogicBuildQueue.build(DefaultBuildLogicBuildQueue.java:69)
+	at org.gradle.api.internal.initialization.DefaultBuildLogicBuilder.resolveClassPath(DefaultBuildLogicBuilder.java:61)
+	at org.gradle.api.internal.initialization.DefaultScriptHandler.lambda$getInstrumentedScriptClassPath$0(DefaultScriptHandler.java:109)
+	at org.gradle.api.internal.artifacts.configurations.DefaultConfiguration.callAndResetResolutionState(DefaultConfiguration.java:900)
+	at org.gradle.api.internal.initialization.DefaultScriptHandler.getInstrumentedScriptClassPath(DefaultScriptHandler.java:113)
+	at org.gradle.plugin.use.internal.DefaultPluginRequestApplicator.applyPlugins(DefaultPluginRequestApplicator.java:86)
+	at org.gradle.configuration.DefaultScriptPluginFactory$ScriptPluginImpl.apply(DefaultScriptPluginFactory.java:123)
+	at org.gradle.configuration.BuildOperationScriptPlugin$1.run(BuildOperationScriptPlugin.java:68)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:30)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:27)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:48)
+	at org.gradle.configuration.BuildOperationScriptPlugin.lambda$apply$0(BuildOperationScriptPlugin.java:65)
+	at org.gradle.internal.code.DefaultUserCodeApplicationContext.apply(DefaultUserCodeApplicationContext.java:44)
+	at org.gradle.configuration.BuildOperationScriptPlugin.apply(BuildOperationScriptPlugin.java:65)
+	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.lambda$applyToMutableState$1(DefaultProjectStateRegistry.java:435)
+	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.fromMutableState(DefaultProjectStateRegistry.java:453)
+	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.applyToMutableState(DefaultProjectStateRegistry.java:434)
+	at org.gradle.configuration.project.BuildScriptProcessor.execute(BuildScriptProcessor.java:46)
+	at org.gradle.configuration.project.BuildScriptProcessor.execute(BuildScriptProcessor.java:27)
+	at org.gradle.configuration.project.ConfigureActionsProjectEvaluator.evaluate(ConfigureActionsProjectEvaluator.java:35)
+	at org.gradle.configuration.project.LifecycleProjectEvaluator$EvaluateProject.lambda$run$0(LifecycleProjectEvaluator.java:109)
+	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.lambda$applyToMutableState$1(DefaultProjectStateRegistry.java:435)
+	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.lambda$fromMutableState$2(DefaultProjectStateRegistry.java:458)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withReplacedLocks(DefaultWorkerLeaseService.java:359)
+	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.fromMutableState(DefaultProjectStateRegistry.java:458)
+	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.applyToMutableState(DefaultProjectStateRegistry.java:434)
+	at org.gradle.configuration.project.LifecycleProjectEvaluator$EvaluateProject.run(LifecycleProjectEvaluator.java:100)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:30)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:27)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:48)
+	at org.gradle.configuration.project.LifecycleProjectEvaluator.evaluate(LifecycleProjectEvaluator.java:72)
+	at org.gradle.api.internal.project.DefaultProject.evaluateUnchecked(DefaultProject.java:827)
+	at org.gradle.api.internal.project.ProjectLifecycleController.lambda$ensureSelfConfigured$2(ProjectLifecycleController.java:88)
+	at org.gradle.internal.model.StateTransitionController.lambda$doTransition$14(StateTransitionController.java:255)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:266)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:254)
+	at org.gradle.internal.model.StateTransitionController.lambda$maybeTransitionIfNotCurrentlyTransitioning$10(StateTransitionController.java:199)
+	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:36)
+	at org.gradle.internal.model.StateTransitionController.maybeTransitionIfNotCurrentlyTransitioning(StateTransitionController.java:195)
+	at org.gradle.api.internal.project.ProjectLifecycleController.ensureSelfConfigured(ProjectLifecycleController.java:88)
+	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.ensureConfigured(DefaultProjectStateRegistry.java:400)
+	at org.gradle.execution.TaskPathProjectEvaluator.configure(TaskPathProjectEvaluator.java:70)
+	at org.gradle.execution.TaskPathProjectEvaluator.configureHierarchy(TaskPathProjectEvaluator.java:84)
+	at org.gradle.configuration.DefaultProjectsPreparer.prepareProjects(DefaultProjectsPreparer.java:50)
+	at org.gradle.configuration.BuildTreePreparingProjectsPreparer.prepareProjects(BuildTreePreparingProjectsPreparer.java:65)
+	at org.gradle.configuration.BuildOperationFiringProjectsPreparer$ConfigureBuild.run(BuildOperationFiringProjectsPreparer.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:30)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:27)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:48)
+	at org.gradle.configuration.BuildOperationFiringProjectsPreparer.prepareProjects(BuildOperationFiringProjectsPreparer.java:40)
+	at org.gradle.initialization.VintageBuildModelController.lambda$prepareProjects$2(VintageBuildModelController.java:84)
+	at org.gradle.internal.model.StateTransitionController.lambda$doTransition$14(StateTransitionController.java:255)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:266)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:254)
+	at org.gradle.internal.model.StateTransitionController.lambda$transitionIfNotPreviously$11(StateTransitionController.java:213)
+	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:36)
+	at org.gradle.internal.model.StateTransitionController.transitionIfNotPreviously(StateTransitionController.java:209)
+	at org.gradle.initialization.VintageBuildModelController.prepareProjects(VintageBuildModelController.java:84)
+	at org.gradle.initialization.VintageBuildModelController.prepareToScheduleTasks(VintageBuildModelController.java:71)
+	at org.gradle.internal.build.DefaultBuildLifecycleController.lambda$prepareToScheduleTasks$6(DefaultBuildLifecycleController.java:175)
+	at org.gradle.internal.model.StateTransitionController.lambda$doTransition$14(StateTransitionController.java:255)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:266)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:254)
+	at org.gradle.internal.model.StateTransitionController.lambda$maybeTransition$9(StateTransitionController.java:190)
+	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:36)
+	at org.gradle.internal.model.StateTransitionController.maybeTransition(StateTransitionController.java:186)
+	at org.gradle.internal.build.DefaultBuildLifecycleController.prepareToScheduleTasks(DefaultBuildLifecycleController.java:173)
+	at org.gradle.internal.buildtree.DefaultBuildTreeWorkPreparer.scheduleRequestedTasks(DefaultBuildTreeWorkPreparer.java:36)
+	at org.gradle.internal.cc.impl.VintageBuildTreeWorkController$scheduleAndRunRequestedTasks$1.apply(VintageBuildTreeWorkController.kt:36)
+	at org.gradle.internal.cc.impl.VintageBuildTreeWorkController$scheduleAndRunRequestedTasks$1.apply(VintageBuildTreeWorkController.kt:35)
+	at org.gradle.composite.internal.DefaultIncludedBuildTaskGraph.withNewWorkGraph(DefaultIncludedBuildTaskGraph.java:112)
+	at org.gradle.internal.cc.impl.VintageBuildTreeWorkController.scheduleAndRunRequestedTasks(VintageBuildTreeWorkController.kt:35)
+	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.lambda$scheduleAndRunTasks$1(DefaultBuildTreeLifecycleController.java:77)
+	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.lambda$runBuild$4(DefaultBuildTreeLifecycleController.java:120)
+	at org.gradle.internal.model.StateTransitionController.lambda$transition$6(StateTransitionController.java:169)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:266)
+	at org.gradle.internal.model.StateTransitionController.lambda$transition$7(StateTransitionController.java:169)
+	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:46)
+	at org.gradle.internal.model.StateTransitionController.transition(StateTransitionController.java:169)
+	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.runBuild(DefaultBuildTreeLifecycleController.java:117)
+	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.scheduleAndRunTasks(DefaultBuildTreeLifecycleController.java:77)
+	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.scheduleAndRunTasks(DefaultBuildTreeLifecycleController.java:72)
+	at org.gradle.tooling.internal.provider.ExecuteBuildActionRunner.run(ExecuteBuildActionRunner.java:31)
+	at org.gradle.launcher.exec.ChainingBuildActionRunner.run(ChainingBuildActionRunner.java:35)
+	at org.gradle.internal.buildtree.ProblemReportingBuildActionRunner.run(ProblemReportingBuildActionRunner.java:49)
+	at org.gradle.launcher.exec.BuildOutcomeReportingBuildActionRunner.run(BuildOutcomeReportingBuildActionRunner.java:71)
+	at org.gradle.tooling.internal.provider.FileSystemWatchingBuildActionRunner.run(FileSystemWatchingBuildActionRunner.java:135)
+	at org.gradle.launcher.exec.BuildCompletionNotifyingBuildActionRunner.run(BuildCompletionNotifyingBuildActionRunner.java:41)
+	at org.gradle.launcher.exec.RootBuildLifecycleBuildActionExecutor.lambda$execute$0(RootBuildLifecycleBuildActionExecutor.java:54)
+	at org.gradle.composite.internal.DefaultRootBuildState.run(DefaultRootBuildState.java:130)
+	at org.gradle.launcher.exec.RootBuildLifecycleBuildActionExecutor.execute(RootBuildLifecycleBuildActionExecutor.java:54)
+	at org.gradle.internal.buildtree.InitDeprecationLoggingActionExecutor.execute(InitDeprecationLoggingActionExecutor.java:62)
+	at org.gradle.internal.buildtree.InitProblems.execute(InitProblems.java:36)
+	at org.gradle.internal.buildtree.DefaultBuildTreeContext.execute(DefaultBuildTreeContext.java:40)
+	at org.gradle.launcher.exec.BuildTreeLifecycleBuildActionExecutor.lambda$execute$0(BuildTreeLifecycleBuildActionExecutor.java:71)
+	at org.gradle.internal.buildtree.BuildTreeState.run(BuildTreeState.java:60)
+	at org.gradle.launcher.exec.BuildTreeLifecycleBuildActionExecutor.execute(BuildTreeLifecycleBuildActionExecutor.java:71)
+	at org.gradle.launcher.exec.RunAsBuildOperationBuildActionExecutor$2.call(RunAsBuildOperationBuildActionExecutor.java:67)
+	at org.gradle.launcher.exec.RunAsBuildOperationBuildActionExecutor$2.call(RunAsBuildOperationBuildActionExecutor.java:63)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.launcher.exec.RunAsBuildOperationBuildActionExecutor.execute(RunAsBuildOperationBuildActionExecutor.java:63)
+	at org.gradle.launcher.exec.RunAsWorkerThreadBuildActionExecutor.lambda$execute$0(RunAsWorkerThreadBuildActionExecutor.java:36)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:263)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:127)
+	at org.gradle.launcher.exec.RunAsWorkerThreadBuildActionExecutor.execute(RunAsWorkerThreadBuildActionExecutor.java:36)
+	at org.gradle.tooling.internal.provider.continuous.ContinuousBuildActionExecutor.execute(ContinuousBuildActionExecutor.java:110)
+	at org.gradle.tooling.internal.provider.SubscribableBuildActionExecutor.execute(SubscribableBuildActionExecutor.java:64)
+	at org.gradle.internal.session.DefaultBuildSessionContext.execute(DefaultBuildSessionContext.java:46)
+	at org.gradle.internal.buildprocess.execution.BuildSessionLifecycleBuildActionExecutor$ActionImpl.apply(BuildSessionLifecycleBuildActionExecutor.java:92)
+	at org.gradle.internal.buildprocess.execution.BuildSessionLifecycleBuildActionExecutor$ActionImpl.apply(BuildSessionLifecycleBuildActionExecutor.java:80)
+	at org.gradle.internal.session.BuildSessionState.run(BuildSessionState.java:73)
+	at org.gradle.internal.buildprocess.execution.BuildSessionLifecycleBuildActionExecutor.execute(BuildSessionLifecycleBuildActionExecutor.java:62)
+	at org.gradle.internal.buildprocess.execution.BuildSessionLifecycleBuildActionExecutor.execute(BuildSessionLifecycleBuildActionExecutor.java:41)
+	at org.gradle.internal.buildprocess.execution.StartParamsValidatingActionExecutor.execute(StartParamsValidatingActionExecutor.java:64)
+	at org.gradle.internal.buildprocess.execution.StartParamsValidatingActionExecutor.execute(StartParamsValidatingActionExecutor.java:32)
+	at org.gradle.internal.buildprocess.execution.SessionFailureReportingActionExecutor.execute(SessionFailureReportingActionExecutor.java:51)
+	at org.gradle.internal.buildprocess.execution.SessionFailureReportingActionExecutor.execute(SessionFailureReportingActionExecutor.java:39)
+	at org.gradle.internal.buildprocess.execution.SetupLoggingActionExecutor.execute(SetupLoggingActionExecutor.java:47)
+	at org.gradle.internal.buildprocess.execution.SetupLoggingActionExecutor.execute(SetupLoggingActionExecutor.java:31)
+	at org.gradle.launcher.daemon.server.exec.ExecuteBuild.doBuild(ExecuteBuild.java:70)
+	at org.gradle.launcher.daemon.server.exec.BuildCommandOnly.execute(BuildCommandOnly.java:37)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.WatchForDisconnection.execute(WatchForDisconnection.java:39)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.ResetDeprecationLogger.execute(ResetDeprecationLogger.java:29)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.RequestStopIfSingleUsedDaemon.execute(RequestStopIfSingleUsedDaemon.java:35)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.ForwardClientInput.lambda$execute$0(ForwardClientInput.java:40)
+	at org.gradle.internal.daemon.clientinput.ClientInputForwarder.forwardInput(ClientInputForwarder.java:80)
+	at org.gradle.launcher.daemon.server.exec.ForwardClientInput.execute(ForwardClientInput.java:37)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.LogAndCheckHealth.execute(LogAndCheckHealth.java:53)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.LogToClient.doBuild(LogToClient.java:63)
+	at org.gradle.launcher.daemon.server.exec.BuildCommandOnly.execute(BuildCommandOnly.java:37)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.EstablishBuildEnvironment.doBuild(EstablishBuildEnvironment.java:84)
+	at org.gradle.launcher.daemon.server.exec.BuildCommandOnly.execute(BuildCommandOnly.java:37)
+	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+	at org.gradle.launcher.daemon.server.exec.StartBuildOrRespondWithBusy$1.run(StartBuildOrRespondWithBusy.java:52)
+	at org.gradle.launcher.daemon.server.DaemonStateCoordinator.lambda$runCommand$0(DaemonStateCoordinator.java:321)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48)
+Cause 1: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.jetbrains.kotlin:kotlin-stdlib:2.2.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.2.0/kotlin-stdlib-2.2.0.pom
+  - https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.2.0/kotlin-stdlib-2.2.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:gradle-settings-api:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:aaptcompiler:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder-model:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:gradle-api:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:gradle-settings-api:8.13.0 > com.android.tools.build:gradle-common-api:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.build:manifest-merger:31.13.0
+Cause 2: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.apache.httpcomponents:httpmime:4.5.6.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/apache/httpcomponents/httpmime/4.5.6/httpmime-4.5.6.pom
+  - https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpmime/4.5.6/httpmime-4.5.6.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdklib:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:crash:31.13.0
+Cause 3: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find commons-io:commons-io:2.16.1.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/commons-io/commons-io/2.16.1/commons-io-2.16.1.pom
+  - https://repo.maven.apache.org/maven2/commons-io/commons-io/2.16.1/commons-io-2.16.1.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > androidx.databinding:databinding-compiler-common:8.13.0
+Cause 4: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.ow2.asm:asm:9.8.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/ow2/asm/asm/9.8/asm-9.8.pom
+  - https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.8/asm-9.8.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.lint:lint-typedef-remover:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:gradle-api:8.13.0
+Cause 5: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.ow2.asm:asm-analysis:9.8.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/ow2/asm/asm-analysis/9.8/asm-analysis-9.8.pom
+  - https://repo.maven.apache.org/maven2/org/ow2/asm/asm-analysis/9.8/asm-analysis-9.8.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+Cause 6: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.ow2.asm:asm-commons:9.8.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/ow2/asm/asm-commons/9.8/asm-commons-9.8.pom
+  - https://repo.maven.apache.org/maven2/org/ow2/asm/asm-commons/9.8/asm-commons-9.8.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0
+Cause 7: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.ow2.asm:asm-util:9.8.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/ow2/asm/asm-util/9.8/asm-util-9.8.pom
+  - https://repo.maven.apache.org/maven2/org/ow2/asm/asm-util/9.8/asm-util-9.8.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+Cause 8: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.bouncycastle:bcpkix-jdk18on:1.79.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/bouncycastle/bcpkix-jdk18on/1.79/bcpkix-jdk18on-1.79.pom
+  - https://repo.maven.apache.org/maven2/org/bouncycastle/bcpkix-jdk18on/1.79/bcpkix-jdk18on-1.79.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.build:apkzlib:8.13.0
+Cause 9: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.glassfish.jaxb:jaxb-runtime:2.3.2.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/glassfish/jaxb/jaxb-runtime/2.3.2/jaxb-runtime-2.3.2.pom
+  - https://repo.maven.apache.org/maven2/org/glassfish/jaxb/jaxb-runtime/2.3.2/jaxb-runtime-2.3.2.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdklib:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:repository:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > androidx.databinding:databinding-compiler-common:8.13.0
+Cause 10: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find net.sf.jopt-simple:jopt-simple:4.9.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/net/sf/jopt-simple/jopt-simple/4.9/jopt-simple-4.9.pom
+  - https://repo.maven.apache.org/maven2/net/sf/jopt-simple/jopt-simple/4.9/jopt-simple-4.9.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+Cause 11: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.squareup:javapoet:1.10.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/squareup/javapoet/1.10.0/javapoet-1.10.0.pom
+  - https://repo.maven.apache.org/maven2/com/squareup/javapoet/1.10.0/javapoet-1.10.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > androidx.databinding:databinding-compiler-common:8.13.0
+Cause 12: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.protobuf:protobuf-java:3.25.5.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/protobuf/protobuf-java/3.25.5/protobuf-java-3.25.5.pom
+  - https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.25.5/protobuf-java-3.25.5.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.ddms:ddmlib:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:aapt2-proto:8.13.0-13719691
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:aaptcompiler:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-device-provider-ddmlib-proto:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-device-provider-profile-proto:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-host-additional-test-output-proto:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-host-coverage-proto:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-host-emulator-control-proto:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-host-logcat-proto:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-host-apk-installer-proto:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:shared:31.13.0 > com.android.tools.analytics-library:protos:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.analytics-library:tracker:31.13.0
+Cause 13: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.protobuf:protobuf-java-util:3.25.5.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/protobuf/protobuf-java-util/3.25.5/protobuf-java-util-3.25.5.pom
+  - https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java-util/3.25.5/protobuf-java-util-3.25.5.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+Cause 14: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.code.gson:gson:2.11.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.pom
+  - https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdklib:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:shared:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > androidx.databinding:databinding-compiler-common:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.build:manifest-merger:31.13.0
+Cause 15: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find io.grpc:grpc-core:1.69.1.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/io/grpc/grpc-core/1.69.1/grpc-core-1.69.1.pom
+  - https://repo.maven.apache.org/maven2/io/grpc/grpc-core/1.69.1/grpc-core-1.69.1.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+Cause 16: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find io.grpc:grpc-netty:1.69.1.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/io/grpc/grpc-netty/1.69.1/grpc-netty-1.69.1.pom
+  - https://repo.maven.apache.org/maven2/io/grpc/grpc-netty/1.69.1/grpc-netty-1.69.1.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+Cause 17: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find io.grpc:grpc-protobuf:1.69.1.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/io/grpc/grpc-protobuf/1.69.1/grpc-protobuf-1.69.1.pom
+  - https://repo.maven.apache.org/maven2/io/grpc/grpc-protobuf/1.69.1/grpc-protobuf-1.69.1.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+Cause 18: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find io.grpc:grpc-stub:1.69.1.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/io/grpc/grpc-stub/1.69.1/grpc-stub-1.69.1.pom
+  - https://repo.maven.apache.org/maven2/io/grpc/grpc-stub/1.69.1/grpc-stub-1.69.1.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+Cause 19: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find io.grpc:grpc-inprocess:1.69.1.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/io/grpc/grpc-inprocess/1.69.1/grpc-inprocess-1.69.1.pom
+  - https://repo.maven.apache.org/maven2/io/grpc/grpc-inprocess/1.69.1/grpc-inprocess-1.69.1.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+Cause 20: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.crypto.tink:tink:1.7.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/crypto/tink/tink/1.7.0/tink-1.7.0.pom
+  - https://repo.maven.apache.org/maven2/com/google/crypto/tink/tink/1.7.0/tink-1.7.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+Cause 21: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.flatbuffers:flatbuffers-java:1.12.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/flatbuffers/flatbuffers-java/1.12.0/flatbuffers-java-1.12.0.pom
+  - https://repo.maven.apache.org/maven2/com/google/flatbuffers/flatbuffers-java/1.12.0/flatbuffers-java-1.12.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+Cause 22: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.tensorflow:tensorflow-lite-metadata:0.2.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/tensorflow/tensorflow-lite-metadata/0.2.0/tensorflow-lite-metadata-0.2.0.pom
+  - https://repo.maven.apache.org/maven2/org/tensorflow/tensorflow-lite-metadata/0.2.0/tensorflow-lite-metadata-0.2.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0
+Cause 23: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.code.gson:gson:2.11.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.pom
+  - https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.pom
+Required by:
+    root project : > com.google.gms:google-services:4.4.4
+Cause 24: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.2.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/2.2.0/kotlin-stdlib-jdk8-2.2.0.pom
+  - https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/2.2.0/kotlin-stdlib-jdk8-2.2.0.pom
+Required by:
+    root project : > com.google.gms:google-services:4.4.4
+Cause 25: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.guava:guava:33.3.1-jre.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.pom
+  - https://repo.maven.apache.org/maven2/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:aaptcompiler:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:crash:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:shared:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.lint:lint-typedef-remover:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > androidx.databinding:databinding-compiler-common:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder-test-api:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:gradle-api:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0 > com.android.tools:common:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.analytics-library:tracker:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.build:apkzlib:8.13.0
+Cause 26: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find javax.inject:javax.inject:1.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/javax/inject/javax.inject/1/javax.inject-1.pom
+  - https://repo.maven.apache.org/maven2/javax/inject/javax.inject/1/javax.inject-1.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0
+Cause 27: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find net.sf.kxml:kxml2:2.3.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/net/sf/kxml/kxml2/2.3.0/kxml2-2.3.0.pom
+  - https://repo.maven.apache.org/maven2/net/sf/kxml/kxml2/2.3.0/kxml2-2.3.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.ddms:ddmlib:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.lint:lint-model:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.layoutlib:layoutlib-api:31.13.0
+Cause 28: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.apache.commons:commons-compress:1.21.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/apache/commons/commons-compress/1.21/commons-compress-1.21.pom
+  - https://repo.maven.apache.org/maven2/org/apache/commons/commons-compress/1.21/commons-compress-1.21.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdklib:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:repository:31.13.0
+Cause 29: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.bouncycastle:bcprov-jdk18on:1.79.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/bouncycastle/bcprov-jdk18on/1.79/bcprov-jdk18on-1.79.pom
+  - https://repo.maven.apache.org/maven2/org/bouncycastle/bcprov-jdk18on/1.79/bcprov-jdk18on-1.79.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.build:apkzlib:8.13.0
+Cause 30: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.jetbrains.kotlin:kotlin-reflect:2.2.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/jetbrains/kotlin/kotlin-reflect/2.2.0/kotlin-reflect-2.2.0.pom
+  - https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/2.2.0/kotlin-reflect-2.2.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+Cause 31: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.2.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/2.2.0/kotlin-stdlib-jdk8-2.2.0.pom
+  - https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/2.2.0/kotlin-stdlib-jdk8-2.2.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:repository:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:shared:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.lint:lint-model:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > androidx.databinding:databinding-compiler-common:8.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-host-emulator-control-proto:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0 > com.android.tools:common:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.analytics-library:tracker:31.13.0
+Cause 32: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.apache.httpcomponents:httpcore:4.4.16.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/apache/httpcomponents/httpcore/4.4.16/httpcore-4.4.16.pom
+  - https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpcore/4.4.16/httpcore-4.4.16.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdklib:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:crash:31.13.0
+Cause 33: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.jimfs:jimfs:1.1.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/jimfs/jimfs/1.1/jimfs-1.1.pom
+  - https://repo.maven.apache.org/maven2/com/google/jimfs/jimfs/1.1/jimfs-1.1.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:repository:31.13.0
+Cause 34: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.sun.activation:javax.activation:1.2.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/sun/activation/javax.activation/1.2.0/javax.activation-1.2.0.pom
+  - https://repo.maven.apache.org/maven2/com/sun/activation/javax.activation/1.2.0/javax.activation-1.2.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:repository:31.13.0
+Cause 35: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core/1.9.0/kotlinx-coroutines-core-1.9.0.pom
+  - https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core/1.9.0/kotlinx-coroutines-core-1.9.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:repository:31.13.0
+Cause 36: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.jetbrains:annotations:23.0.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/jetbrains/annotations/23.0.0/annotations-23.0.0.pom
+  - https://repo.maven.apache.org/maven2/org/jetbrains/annotations/23.0.0/annotations-23.0.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.ddms:ddmlib:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.layoutlib:layoutlib-api:31.13.0
+Cause 37: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.apache.httpcomponents:httpclient:4.5.14.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/apache/httpcomponents/httpclient/4.5.14/httpclient-4.5.14.pom
+  - https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.5.14/httpclient-4.5.14.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:crash:31.13.0
+Cause 38: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find net.java.dev.jna:jna-platform:5.6.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/net/java/dev/jna/jna-platform/5.6.0/jna-platform-5.6.0.pom
+  - https://repo.maven.apache.org/maven2/net/java/dev/jna/jna-platform/5.6.0/jna-platform-5.6.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.analytics-library:shared:31.13.0
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools:sdk-common:31.13.0 > com.android.tools:common:31.13.0
+Cause 39: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.googlecode.juniversalchardet:juniversalchardet:1.0.3.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/googlecode/juniversalchardet/juniversalchardet/1.0.3/juniversalchardet-1.0.3.pom
+  - https://repo.maven.apache.org/maven2/com/googlecode/juniversalchardet/juniversalchardet/1.0.3/juniversalchardet-1.0.3.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > androidx.databinding:databinding-compiler-common:8.13.0
+Cause 40: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find javax.annotation:javax.annotation-api:1.3.2.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.pom
+  - https://repo.maven.apache.org/maven2/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.13.0
+Cause 41: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.auto.value:auto-value-annotations:1.6.2.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/auto/value/auto-value-annotations/1.6.2/auto-value-annotations-1.6.2.pom
+  - https://repo.maven.apache.org/maven2/com/google/auto/value/auto-value-annotations/1.6.2/auto-value-annotations-1.6.2.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+Cause 42: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.errorprone:error_prone_annotations:2.3.1.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/errorprone/error_prone_annotations/2.3.1/error_prone_annotations-2.3.1.pom
+  - https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.3.1/error_prone_annotations-2.3.1.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+Cause 43: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.guava:guava:33.3.1-jre.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.pom
+  - https://repo.maven.apache.org/maven2/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+Cause 44: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.protobuf:protobuf-java:3.25.5.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/protobuf/protobuf-java/3.25.5/protobuf-java-3.25.5.pom
+  - https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.25.5/protobuf-java-3.25.5.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+Cause 45: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.protobuf:protobuf-java-util:3.25.5.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/protobuf/protobuf-java-util/3.25.5/protobuf-java-util-3.25.5.pom
+  - https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java-util/3.25.5/protobuf-java-util-3.25.5.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+Cause 46: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.dagger:dagger:2.28.3.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/dagger/dagger/2.28.3/dagger-2.28.3.pom
+  - https://repo.maven.apache.org/maven2/com/google/dagger/dagger/2.28.3/dagger-2.28.3.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+Cause 47: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.bitbucket.b_c:jose4j:0.9.5.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/bitbucket/b_c/jose4j/0.9.5/jose4j-0.9.5.pom
+  - https://repo.maven.apache.org/maven2/org/bitbucket/b_c/jose4j/0.9.5/jose4j-0.9.5.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+Cause 48: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.slf4j:slf4j-api:1.7.30.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.pom
+  - https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:bundletool:1.18.1
+Cause 49: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.code.gson:gson:2.11.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.pom
+  - https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build.jetifier:jetifier-core:1.0.0-beta10
+Cause 50: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.jetbrains.kotlin:kotlin-stdlib:2.2.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.2.0/kotlin-stdlib-2.2.0.pom
+  - https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.2.0/kotlin-stdlib-2.2.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build.jetifier:jetifier-core:1.0.0-beta10
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build.jetifier:jetifier-processor:1.0.0-beta10
+Cause 51: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.ow2.asm:asm:9.8.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/ow2/asm/asm/9.8/asm-9.8.pom
+  - https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.8/asm-9.8.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build.jetifier:jetifier-processor:1.0.0-beta10
+Cause 52: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.ow2.asm:asm-util:9.8.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/ow2/asm/asm-util/9.8/asm-util-9.8.pom
+  - https://repo.maven.apache.org/maven2/org/ow2/asm/asm-util/9.8/asm-util-9.8.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build.jetifier:jetifier-processor:1.0.0-beta10
+Cause 53: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.ow2.asm:asm-commons:9.8.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/ow2/asm/asm-commons/9.8/asm-commons-9.8.pom
+  - https://repo.maven.apache.org/maven2/org/ow2/asm/asm-commons/9.8/asm-commons-9.8.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build.jetifier:jetifier-processor:1.0.0-beta10
+Cause 54: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.jdom:jdom2:2.0.6.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/jdom/jdom2/2.0.6/jdom2-2.0.6.pom
+  - https://repo.maven.apache.org/maven2/org/jdom/jdom2/2.0.6/jdom2-2.0.6.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build.jetifier:jetifier-processor:1.0.0-beta10
+Cause 55: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.protobuf:protobuf-java:3.25.5.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/protobuf/protobuf-java/3.25.5/protobuf-java-3.25.5.pom
+  - https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.25.5/protobuf-java-3.25.5.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.google.testing.platform:core-proto:0.0.9-alpha03
+Cause 56: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.squareup:javawriter:2.5.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/squareup/javawriter/2.5.0/javawriter-2.5.0.pom
+  - https://repo.maven.apache.org/maven2/com/squareup/javawriter/2.5.0/javawriter-2.5.0.pom
+Required by:
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0
+Cause 57: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.code.findbugs:jsr305:3.0.2.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.pom
+  - https://repo.maven.apache.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.pom
+Required by:
+    root project : > com.google.gms:google-services:4.4.4 > com.google.android.gms:strict-version-matcher-plugin:1.2.4
+    root project : > com.android.tools.build:gradle:8.13.0 > com.android.tools.build:builder:8.13.0 > com.android.tools.build:apkzlib:8.13.0
+Cause 58: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find com.google.guava:guava:33.3.1-jre.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.pom
+  - https://repo.maven.apache.org/maven2/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.pom
+Required by:
+    root project : > com.google.gms:google-services:4.4.4 > com.google.android.gms:strict-version-matcher-plugin:1.2.4
+Cause 59: org.gradle.internal.resolve.ModuleVersionNotFoundException: Could not find org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.2.0.
+Searched in the following locations:
+  - https://dl.google.com/dl/android/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/2.2.0/kotlin-stdlib-jdk8-2.2.0.pom
+  - https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk8/2.2.0/kotlin-stdlib-jdk8-2.2.0.pom
+Required by:
+    root project : > com.google.gms:google-services:4.4.4 > com.google.android.gms:strict-version-matcher-plugin:1.2.4
+
+
+BUILD FAILED in 9s
