@@ -123,7 +123,7 @@ cp android-patches/MoreadNativePlugin.java "$JAVA_SRC/"
 cp android-patches/ReminderReceiver.java "$JAVA_SRC/"
 cp android-patches/MainActivity.java "$JAVA_SRC/"
 
-step "补 AndroidManifest（通知权限 + 提醒接收者 + 接管返回键）"
+step "补 AndroidManifest（通知权限 + 提醒接收者 + 接管返回键 + 锁竖屏）"
 node -e '
   const fs = require("fs");
   const p = process.argv[1];
@@ -142,6 +142,11 @@ node -e '
   fs.writeFileSync(p, s);
   console.log("manifest patched");
 ' "$MANIFEST"
+
+# 竖屏锁单独一步：它只在 activity 上生效（写 application 不报错、也完全没用），
+# 而且必须幂等 —— setup 在本地可能反复跑。判定与回读都在脚本里，认不出模板就炸。
+step "锁竖屏（壳不支持横屏）"
+node scripts/patch-manifest.mjs "$MANIFEST"
 
 step "sync（把 dist 与插件写进 android 工程）"
 npx cap sync android
